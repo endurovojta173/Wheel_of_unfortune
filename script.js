@@ -120,7 +120,7 @@ function drawWheel() {
         ctx.save();
         ctx.translate(centerX, centerY);
         ctx.rotate(angle + arc / 2);
-        ctx.textAlign = "right";
+        ctx.textAlign = "center"; // Změna na středové zarovnání
         ctx.textBaseline = "middle";
         
         const segmentColor = colors[i % colors.length];
@@ -153,14 +153,24 @@ function drawWheel() {
         }
         lines.push(line);
         
-        // Vykreslení řádků (vertikálně vycentrované)
+        // Spočítáme skutečnou maximální šířku řádku v tomto bloku, 
+        // aby blok textu mohl být jako celek nalepený na vnějším okraji
+        let actualMaxWidth = 0;
+        for (let j = 0; j < lines.length; j++) {
+            const w = ctx.measureText(lines[j].trim()).width;
+            if (w > actualMaxWidth) actualMaxWidth = w;
+        }
+
+        // Vykreslení řádků (vertikálně i horizontálně vycentrované kousek od okraje)
         const lineHeight = fontSize + 6;
         const totalHeight = lines.length * lineHeight;
         const startY = -(totalHeight / 2) + (lineHeight / 2);
         
+        // Cílový pravý okraj bloku je radius - 45. Střed textu bude tedy posunut o polovinu jeho šířky doleva.
+        const textCenterX = radius - 45 - (actualMaxWidth / 2);
+        
         for(let j = 0; j < lines.length; j++) {
-            // Zarovnání k vnějšímu okraji
-            ctx.fillText(lines[j].trim(), radius - 45, startY + (j * lineHeight));
+            ctx.fillText(lines[j].trim(), textCenterX, startY + (j * lineHeight));
         }
         
         ctx.restore();
