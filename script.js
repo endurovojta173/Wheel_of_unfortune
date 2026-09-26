@@ -638,3 +638,59 @@ if (closeInfoBtn) {
         infoModal.classList.add('hidden');
     });
 }
+
+const shareCategoryBtn = document.getElementById('shareCategoryBtn');
+if (shareCategoryBtn) {
+    shareCategoryBtn.addEventListener('click', () => {
+        const dataToShare = { name: currentSetName, items: misfortunes };
+        const encoded = btoa(encodeURIComponent(JSON.stringify(dataToShare)));
+        
+        const url = new URL(window.location.href);
+        url.searchParams.set('sharedCategory', encoded);
+        
+        navigator.clipboard.writeText(url.toString()).then(() => {
+            const originalText = shareCategoryBtn.textContent;
+            shareCategoryBtn.textContent = 'Zkopírováno!';
+            setTimeout(() => { shareCategoryBtn.textContent = originalText; }, 2000);
+        }).catch(err => {
+            alert('Nepodařilo se zkopírovat odkaz automaticky. Zde je váš odkaz:\n\n' + url.toString());
+        });
+    });
+}
+
+// --- Zpracování sdílené kategorie z URL ---
+window.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const sharedEncoded = urlParams.get('sharedCategory');
+    if (sharedEncoded) {
+        try {
+            const decodedStr = decodeURIComponent(atob(sharedEncoded));
+            const sharedData = JSON.parse(decodedStr);
+            
+            if (sharedData && sharedData.name && Array.isArray(sharedData.items) && sharedData.items.length >= 2) {
+                // Přidáme do localStorage
+                const savedCategoriesObj = JSON.parse(localStorage.getItem('wheelCustomCategories')) || {};
+                savedCategoriesObj[sharedData.name] = sharedData.items;
+                localStorage.setItem('wheelCustomCategories', JSON.stringify(savedCategoriesObj));
+                
+                // Aktivovat do paměti
+                questionSets[sharedData.name] = sharedData.items;
+                currentSetName = sharedData.name;
+                misfortunes = questionSets[sharedData.name];
+                
+                // Přečistit URL bez znovunačtení stránky
+                const newUrl = new URL(window.location.href);
+                newUrl.searchParams.delete('sharedCategory');
+                window.history.replaceState({}, document.title, newUrl.toString());
+                
+                alert(`Kategorie "${sharedData.name}" byla úspěšně importována!`);
+                
+                populateMenu();
+                drawWheel();
+            }
+        } catch(e) {
+            console.error("Chyba při načítání sdílené kategorie:", e);
+            alert("Odkaz na sdílenou kategorii je neplatný nebo poškozený.");
+        }
+    }
+});
