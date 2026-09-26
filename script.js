@@ -25,18 +25,6 @@ const questionSets = {
         "Jaký je tvůj nejhorší zlozvyk?",
         "Zavolej náhodnému kontaktu"
     ],
-    "IT a Vývojáři": [
-        "Smazaná produkční DB",
-        "Páteční deploy spadnul",
-        "Nekonečná smyčka",
-        "Merge konflikt (50+)",
-        "Rozlitá káva do klávesnice",
-        "Spadl internet na hodinu",
-        "Ztracené heslo k serveru",
-        "Klient změnil zadání (v pátek)",
-        "Záloha neexistuje",
-        "Smazal jsi branch (master)"
-    ],
     "Odvážné výzvy (Hardcore)": [
         "Sněz lžičku chilli omáčky",
         "Napiš zprávu svému šéfovi",
@@ -288,8 +276,12 @@ function spinWheel() {
     isSpinning = true;
     spinBtn.disabled = true;
 
-    // Vypočítat náhodnou rotaci (4 až 7 plných otáček + náhodný úhel pro zastavení)
-    const extraSpins = Math.floor(Math.random() * 4) + 4;
+    // Náhodná doba točení (4.5 až 8.5 vteřin)
+    const spinDurationS = 4.5 + (Math.random() * 4);
+    const spinDurationMs = Math.round(spinDurationS * 1000);
+
+    // Počet otáček navázaný zhruba na dobu trvání (aspoň 4)
+    const extraSpins = Math.floor(spinDurationS) + 1;
     const randomAngle = Math.floor(Math.random() * 360);
     
     const targetRotation = currentRotation + (extraSpins * 360) + randomAngle;
@@ -297,14 +289,17 @@ function spinWheel() {
     // Spočítat, kolik dílků kolo celkem mine, a nastavit adekvátní počet "tiků"
     const rotationDiff = targetRotation - currentRotation;
     const segmentsPassed = Math.floor(rotationDiff / (360 / misfortunes.length));
-    simulateWheelTicks(5000, segmentsPassed);
+    simulateWheelTicks(spinDurationMs, segmentsPassed);
 
-    // CSS Animace (plynulý dojezd) s HW akcelerací pro levnější TV (translateZ)
-    canvas.style.transition = 'transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99)';
+    // CSS Animace s HW akcelerací
+    canvas.style.transition = `transform ${spinDurationS}s cubic-bezier(0.17, 0.67, 0.12, 0.99)`;
     canvas.style.transform = `rotate(${targetRotation}deg) translateZ(0)`;
 
-    // Počkat na dokončení animace (5 vteřin)
-    setTimeout(() => {
+    // Naslouchat přesně na moment, kdy CSS animace opravdu skončí
+    canvas.addEventListener('transitionend', function onSpinEnd() {
+        // Okamžitě odstraníme posluchač, aby se nevolal víckrát
+        canvas.removeEventListener('transitionend', onSpinEnd);
+        
         isSpinning = false;
         spinBtn.disabled = false;
         
@@ -318,8 +313,7 @@ function spinWheel() {
         const winningIndex = Math.floor(pointerAngle / degreesPerSegment);
         
         showResult(misfortunes[winningIndex]);
-        
-    }, 5000);
+    });
 }
 
 function showResult(text) {
