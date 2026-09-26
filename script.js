@@ -267,45 +267,127 @@ function playMisfortuneSound() {
     if (!audioCtx) return;
     const now = audioCtx.currentTime;
     
-    const gainNode = audioCtx.createGain();
-    gainNode.connect(audioCtx.destination);
+    // Náhodný výběr jedné ze tří fanfár
+    const choice = Math.floor(Math.random() * 3);
     
-    // Radostná, čistá "Tadáá!" fanfára (C5, E5, G5, C6) - ironický kontrast k faktu, že jde o neštěstí
-    const notes = [523.25, 659.25, 783.99, 1046.50]; 
-    const times = [0, 0.12, 0.24, 0.36];
-    
-    const osc1 = audioCtx.createOscillator();
-    const osc2 = audioCtx.createOscillator();
-    
-    // Retro 8-bitový zvuk (čtvercová vlna)
-    osc1.type = 'square';
-    osc2.type = 'square';
-    
-    osc1.connect(gainNode);
-    osc2.connect(gainNode);
-    
-    gainNode.gain.setValueAtTime(0, now);
-    
-    for(let i = 0; i < 4; i++) {
-        // Druhý oscilátor je nepatrně posunutý pro plnější (chorus) zvuk
-        osc1.frequency.setValueAtTime(notes[i], now + times[i]);
-        osc2.frequency.setValueAtTime(notes[i] * 1.005, now + times[i]);
+    if (choice === 0) {
+        // --- 1. Epická žesťová fanfára (Ta-ta-ta-DAAA!) ---
+        const times = [0, 0.15, 0.30, 0.50];
         
-        if (i < 3) {
-            // První 3 tóny jsou velmi rychlé (Ta-da-da...)
-            gainNode.gain.setValueAtTime(0.15, now + times[i]);
-            gainNode.gain.linearRampToValueAtTime(0, now + times[i] + 0.1);
-        } else {
-            // Poslední tón je dlouhý a postupně utichá (...DAAA!)
-            gainNode.gain.setValueAtTime(0.15, now + times[i]);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, now + times[i] + 1.5);
+        function playEpicTone(freq, time, duration, isLast) {
+            const detunes = [-5, 0, 5]; 
+            detunes.forEach(detune => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sawtooth'; 
+                osc.frequency.value = freq;
+                osc.detune.value = detune;
+                const maxGain = 0.05; 
+                
+                gain.gain.setValueAtTime(0, time);
+                gain.gain.linearRampToValueAtTime(maxGain, time + 0.02); 
+                
+                if (!isLast) {
+                    gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
+                } else {
+                    gain.gain.setValueAtTime(maxGain, time + duration * 0.4);
+                    gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
+                }
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(time);
+                osc.stop(time + duration + 0.1);
+            });
+        }
+
+        playEpicTone(392.00, now + times[0], 0.1, false);
+        playEpicTone(392.00, now + times[1], 0.1, false);
+        playEpicTone(392.00, now + times[2], 0.1, false);
+        
+        playEpicTone(261.63, now + times[3], 2.5, true); 
+        playEpicTone(523.25, now + times[3], 2.5, true); 
+        playEpicTone(659.25, now + times[3], 2.5, true); 
+        playEpicTone(783.99, now + times[3], 2.5, true); 
+        
+    } else if (choice === 1) {
+        // --- 2. Retro 8-bitová fanfára (TadadaDAAA) ---
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        const times = [0, 0.12, 0.24, 0.36];
+        
+        const gainNode = audioCtx.createGain();
+        gainNode.connect(audioCtx.destination);
+        gainNode.gain.setValueAtTime(0, now);
+        
+        const osc1 = audioCtx.createOscillator();
+        const osc2 = audioCtx.createOscillator();
+        osc1.type = 'square';
+        osc2.type = 'square';
+        osc1.connect(gainNode);
+        osc2.connect(gainNode);
+        
+        for(let i = 0; i < 4; i++) {
+            osc1.frequency.setValueAtTime(notes[i], now + times[i]);
+            osc2.frequency.setValueAtTime(notes[i] * 1.005, now + times[i]);
+            
+            if (i < 3) {
+                gainNode.gain.setValueAtTime(0.15, now + times[i]);
+                gainNode.gain.linearRampToValueAtTime(0, now + times[i] + 0.1);
+            } else {
+                gainNode.gain.setValueAtTime(0.15, now + times[i]);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + times[i] + 1.5);
+            }
+        }
+        
+        osc1.start(now);
+        osc2.start(now);
+        osc1.stop(now + 2.0);
+        osc2.stop(now + 2.0);
+        
+    } else {
+        // --- 3. Královská jízda (Cavalry Charge) ---
+        // Melodie: Da-da-da-DAAA, da-DAAAA!
+        const G4 = 392.00, C5 = 523.25, E5 = 659.25, G5 = 783.99;
+        const notes = [G4, C5, E5, G5, E5, G5];
+        const times = [0, 0.15, 0.30, 0.45, 0.8, 1.0];
+        const durs =  [0.1, 0.1, 0.1, 0.25, 0.1, 1.5];
+        
+        function playTrumpet(freq, time, duration, isLast) {
+            const osc1 = audioCtx.createOscillator();
+            const osc2 = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            // Mix pily a trojúhelníku pro jemnější, ale úderný zvuk trubky
+            osc1.type = 'triangle'; 
+            osc2.type = 'sawtooth';
+            osc1.frequency.value = freq;
+            osc2.frequency.value = freq;
+            
+            const maxGain = 0.08;
+            gain.gain.setValueAtTime(0, time);
+            gain.gain.linearRampToValueAtTime(maxGain, time + 0.02);
+            
+            if (!isLast) {
+                gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
+            } else {
+                gain.gain.setValueAtTime(maxGain, time + duration * 0.4);
+                gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
+            }
+            
+            osc1.connect(gain);
+            osc2.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc1.start(time);
+            osc2.start(time);
+            osc1.stop(time + duration + 0.1);
+            osc2.stop(time + duration + 0.1);
+        }
+        
+        for (let i = 0; i < 6; i++) {
+            playTrumpet(notes[i], now + times[i], durs[i], i === 5);
         }
     }
-    
-    osc1.start(now);
-    osc2.start(now);
-    osc1.stop(now + 2.0);
-    osc2.stop(now + 2.0);
 }
 
 function simulateWheelTicks(duration, totalTicks) {
