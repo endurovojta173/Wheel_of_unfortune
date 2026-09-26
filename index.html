@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kolo Neštěstí</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <meta name="description" content="Vyzkoušej své štěstí (nebo spíše neštěstí) na tomto zábavném kole osudu!">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1 class="glitch" data-text="KOLO NEŠTĚSTÍ">KOLO NEŠTĚSTÍ</h1>
+            <p>Zatoč si pro svou denní dávku utrpení.</p>
+        </header>
+        
+        <main class="wheel-container">
+            <div class="pointer"></div>
+            <canvas id="wheelCanvas"></canvas>
+            
+            <button id="spinBtn" class="spin-btn">
+                <span class="btn-text">ZATOČIT</span>
+                <span class="btn-bg"></span>
+            </button>
+        </main>
+
+        <div id="resultModal" class="modal hidden">
+            <div class="modal-content glass">
+                <h2>Tvůj osud:</h2>
+                <p id="resultText">Něco se pokazilo</p>
+                <button id="closeModalBtn" class="close-btn">Přijmout osud</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Animace konfet -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script type="module" src="script.js"></script>
+</body>
+</html>
