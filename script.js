@@ -478,3 +478,107 @@ if (themeList) {
         });
     });
 }
+
+// --- Logika pro vlastní kategorii ---
+const customModal = document.getElementById('customModal');
+const createCustomBtn = document.getElementById('createCustomBtn');
+const saveCustomBtn = document.getElementById('saveCustomBtn');
+const cancelCustomBtn = document.getElementById('cancelCustomBtn');
+const customNameInput = document.getElementById('customName');
+const customItemsContainer = document.getElementById('customItemsContainer');
+
+function createCustomRow(placeholderIndex) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'custom-item-wrapper';
+
+    const label = document.createElement('div');
+    label.className = 'input-label';
+    label.textContent = `Položka ${placeholderIndex}`;
+
+    const row = document.createElement('div');
+    row.className = 'custom-item-row';
+    
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'custom-input item-input';
+    input.placeholder = `...`;
+    
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            addCustomRow();
+        }
+    });
+
+    const addBtn = document.createElement('button');
+    addBtn.className = 'add-row-btn';
+    addBtn.textContent = '+';
+    addBtn.addEventListener('click', () => {
+        addCustomRow();
+    });
+    
+    row.appendChild(input);
+    row.appendChild(addBtn);
+    
+    wrapper.appendChild(label);
+    wrapper.appendChild(row);
+    
+    return { row: wrapper, input };
+}
+
+function addCustomRow() {
+    const count = customItemsContainer.children.length + 1;
+    const { row, input } = createCustomRow(count);
+    customItemsContainer.appendChild(row);
+    input.focus();
+    customItemsContainer.scrollTop = customItemsContainer.scrollHeight;
+}
+
+if (createCustomBtn) {
+    createCustomBtn.addEventListener('click', () => {
+        customItemsContainer.innerHTML = ''; // Vyčištění
+        addCustomRow(); // Přidá první řádek
+        customModal.classList.remove('hidden');
+        customNameInput.focus();
+    });
+}
+
+if (cancelCustomBtn) {
+    cancelCustomBtn.addEventListener('click', () => {
+        customModal.classList.add('hidden');
+    });
+}
+
+if (saveCustomBtn) {
+    saveCustomBtn.addEventListener('click', () => {
+        const name = customNameInput.value.trim();
+        const inputs = Array.from(customItemsContainer.querySelectorAll('.item-input'));
+        const items = inputs.map(i => i.value.trim()).filter(i => i !== '');
+            
+        if (!name) {
+            alert('Zadejte název kategorie!');
+            return;
+        }
+        if (items.length < 2) {
+            alert('Kolo musí mít alespoň 2 vyplněné položky.');
+            return;
+        }
+        
+        // Přidání a aktivování nové sady
+        questionSets[name] = items;
+        currentSetName = name;
+        misfortunes = questionSets[name];
+        
+        // Aktualizace UI
+        populateMenu();
+        drawWheel();
+        
+        // Zavření a vyčištění
+        customModal.classList.add('hidden');
+        customNameInput.value = '';
+        
+        if (window.innerWidth <= 768) {
+            toggleMenu(false);
+        }
+    });
+}

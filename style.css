@@ -645,3 +645,108 @@ body.theme-folklore .close-btn:hover, body.theme-folklore .close-btn:focus {
     background: #b71c1c;
     box-shadow: 0 0 0 4px rgba(211, 47, 47, 0.4);
 }
+
+/* --- VLASTNÍ KATEGORIE UI --- */
+.input-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+    margin-top: 8px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.custom-cat-btn {
+    width: calc(100% - 40px);
+    margin: 10px 20px 20px 20px;
+    padding: 10px;
+    background: transparent;
+    border: 1px dashed rgba(255, 255, 255, 0.4);
+    color: var(--text-main);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    flex-shrink: 0;
+}
+.custom-cat-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--text-main);
+}
+body.theme-circus .custom-cat-btn {
+    border-color: rgba(0, 0, 0, 0.3);
+}
+body.theme-circus .custom-cat-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+body.theme-folklore .custom-cat-btn {
+    border-color: #1565c0;
+    color: #1565c0;
+}
+body.theme-folklore .custom-cat-btn:hover {
+    background: rgba(21, 101, 192, 0.1);
+}
+
+.custom-input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    color: var(--text-main);
+    font-family: inherit;
+    resize: none;
+    box-sizing: border-box;
+}
+.custom-input:focus {
+    outline: none;
+    border-color: var(--accent-red);
+}
+body.theme-circus .custom-input, body.theme-folklore .custom-input {
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.custom-items-container {
+    max-height: 250px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+.custom-item-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+.custom-item-row .custom-input {
+    margin-bottom: 0;
+    flex: 1;
+}
+.add-row-btn {
+    width: 44px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-main);
+    cursor: pointer;
+    font-size: 1.4rem;
+    line-height: 1;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+.add-row-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+body.theme-circus .add-row-btn, body.theme-folklore .add-row-btn {
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    color: var(--text-main);
+}
+body.theme-circus .add-row-btn:hover, body.theme-folklore .add-row-btn:hover {
+    background: rgba(255, 255, 255, 0.8);
+}
+
+/* Skryje tlačítko + u všech řádků kromě posledního */
+#customItemsContainer .custom-item-wrapper:not(:last-child) .add-row-btn {
+    display: none;
+}

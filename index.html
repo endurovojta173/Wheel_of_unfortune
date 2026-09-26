@@ -24,6 +24,7 @@
             <ul id="setList" class="set-list">
                 <!-- Dynamicky plněno z JS -->
             </ul>
+            <button id="createCustomBtn" class="custom-cat-btn">+ Vlastní kategorie</button>
             
             <div class="menu-header" style="border-top: 1px solid rgba(255, 255, 255, 0.1); margin-top: auto;">
                 <h2>Vzhled</h2>
@@ -58,6 +59,20 @@
                 <h2>Tvůj osud:</h2>
                 <p id="resultText">Něco se pokazilo</p>
                 <button id="closeModalBtn" class="close-btn">Přijmout osud</button>
+            </div>
+        </div>
+        
+        <!-- Vlastní kategorie modal -->
+        <div id="customModal" class="modal hidden">
+            <div class="modal-content glass" style="width: 90%; max-width: 400px; text-align: left;">
+                <h2 style="margin-bottom: 15px; font-size: 1.5rem;">Vytvořit kolo</h2>
+                <div class="input-label">Název kategorie</div>
+                <input type="text" id="customName" placeholder="Zadejte název..." class="custom-input">
+                <div id="customItemsContainer" class="custom-items-container"></div>
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button id="saveCustomBtn" class="close-btn" style="flex: 1;">Vytvořit</button>
+                    <button id="cancelCustomBtn" class="close-btn" style="flex: 1; background: transparent; border: 1px solid var(--text-muted); color: var(--text-main);">Zrušit</button>
+                </div>
             </div>
         </div>
     </div>
