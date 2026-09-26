@@ -34,7 +34,9 @@ const questionSets = {
         "Mluv s přízvukem 10 minut",
         "Obejmi kolegu naproti",
         "Vyměň si boty s kolegou"
-    ]
+    ],
+    "Čísla 0-10": Array.from({length: 11}, (_, i) => i.toString()),
+    "Čísla 0-20": Array.from({length: 21}, (_, i) => i.toString())
 };
 
 let currentSetName = "Párty trestné (Základní)";
