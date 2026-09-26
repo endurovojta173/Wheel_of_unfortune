@@ -568,6 +568,56 @@ function populateMenu() {
         li.appendChild(labelSpan);
 
         if (!defaultSets.includes(setName)) {
+            const actionsContainer = document.createElement('div');
+            actionsContainer.style.display = 'flex';
+            actionsContainer.style.alignItems = 'center';
+
+            const editBtn = document.createElement('button');
+            editBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>';
+            editBtn.title = 'Upravit kategorii';
+            editBtn.style.background = 'transparent';
+            editBtn.style.border = 'none';
+            editBtn.style.cursor = 'pointer';
+            editBtn.style.color = 'var(--text-main)';
+            editBtn.style.padding = '5px';
+            editBtn.style.marginLeft = '10px';
+            editBtn.style.opacity = '0.7';
+            editBtn.style.display = 'flex';
+            editBtn.style.alignItems = 'center';
+            editBtn.style.justifyContent = 'center';
+            editBtn.style.transition = 'opacity 0.2s, transform 0.2s';
+            
+            editBtn.addEventListener('mouseenter', () => {
+                editBtn.style.opacity = '1';
+                editBtn.style.transform = 'scale(1.2)';
+                editBtn.style.color = '#33ccff';
+            });
+            editBtn.addEventListener('mouseleave', () => {
+                editBtn.style.opacity = '0.7';
+                editBtn.style.transform = 'scale(1)';
+                editBtn.style.color = 'var(--text-main)';
+            });
+
+            editBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleMenu(false);
+                
+                editingCategoryName = setName;
+                if (customModalTitle) customModalTitle.textContent = 'Upravit kolo';
+                saveCustomBtn.textContent = 'Uložit';
+                customNameInput.value = setName;
+                customItemsContainer.innerHTML = '';
+                
+                const items = questionSets[setName];
+                items.forEach(item => addCustomRow(item));
+                
+                // Add one empty row at the end for easy addition
+                addCustomRow();
+                
+                customModal.classList.remove('hidden');
+                customNameInput.focus();
+            });
+
             const deleteBtn = document.createElement('button');
             deleteBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>';
             deleteBtn.title = 'Smazat kategorii';
@@ -576,7 +626,7 @@ function populateMenu() {
             deleteBtn.style.cursor = 'pointer';
             deleteBtn.style.color = '#ff3366'; // Červená barva
             deleteBtn.style.padding = '5px';
-            deleteBtn.style.marginLeft = '10px';
+            deleteBtn.style.marginLeft = '5px';
             deleteBtn.style.opacity = '0.7';
             deleteBtn.style.display = 'flex';
             deleteBtn.style.alignItems = 'center';
@@ -618,7 +668,10 @@ function populateMenu() {
                     populateMenu();
                 });
             });
-            li.appendChild(deleteBtn);
+
+            actionsContainer.appendChild(editBtn);
+            actionsContainer.appendChild(deleteBtn);
+            li.appendChild(actionsContainer);
         }
 
         if (setName === currentSetName) {
@@ -688,13 +741,15 @@ if (themeList) {
 
 // --- Logika pro vlastní kategorii ---
 const customModal = document.getElementById('customModal');
+const customModalTitle = document.getElementById('customModalTitle');
 const createCustomBtn = document.getElementById('createCustomBtn');
 const saveCustomBtn = document.getElementById('saveCustomBtn');
 const cancelCustomBtn = document.getElementById('cancelCustomBtn');
 const customNameInput = document.getElementById('customName');
 const customItemsContainer = document.getElementById('customItemsContainer');
+let editingCategoryName = null;
 
-function createCustomRow(placeholderIndex) {
+function createCustomRow(placeholderIndex, initialValue = '') {
     const wrapper = document.createElement('div');
     wrapper.className = 'custom-item-wrapper';
 
@@ -709,6 +764,7 @@ function createCustomRow(placeholderIndex) {
     input.type = 'text';
     input.className = 'custom-input item-input';
     input.placeholder = `...`;
+    input.value = initialValue;
 
     input.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
@@ -733,16 +789,22 @@ function createCustomRow(placeholderIndex) {
     return { row: wrapper, input };
 }
 
-function addCustomRow() {
+function addCustomRow(initialValue = '') {
     const count = customItemsContainer.children.length + 1;
-    const { row, input } = createCustomRow(count);
+    const { row, input } = createCustomRow(count, initialValue);
     customItemsContainer.appendChild(row);
-    input.focus();
+    if (!initialValue) {
+        input.focus();
+    }
     customItemsContainer.scrollTop = customItemsContainer.scrollHeight;
 }
 
 if (createCustomBtn) {
     createCustomBtn.addEventListener('click', () => {
+        editingCategoryName = null;
+        if (customModalTitle) customModalTitle.textContent = 'Vytvořit kolo';
+        saveCustomBtn.textContent = 'Vytvořit';
+        customNameInput.value = '';
         customItemsContainer.innerHTML = ''; // Vyčištění
         addCustomRow(); // Přidá první řádek
         customModal.classList.remove('hidden');
@@ -774,13 +836,25 @@ if (saveCustomBtn) {
             return;
         }
 
+        const savedCategoriesObj = JSON.parse(localStorage.getItem('wheelCustomCategories')) || {};
+
+        if (editingCategoryName && editingCategoryName !== name) {
+            // Delete old category if renamed
+            delete questionSets[editingCategoryName];
+            delete savedCategoriesObj[editingCategoryName];
+            if (currentSetName === editingCategoryName) {
+                currentSetName = name;
+            }
+        }
+
         // Přidání a aktivování nové sady
         questionSets[name] = items;
-        currentSetName = name;
-        misfortunes = questionSets[name];
+        if (currentSetName === name || editingCategoryName) {
+            currentSetName = name;
+            misfortunes = questionSets[name];
+        }
 
         // Uložení do lokální paměti (localStorage)
-        const savedCategoriesObj = JSON.parse(localStorage.getItem('wheelCustomCategories')) || {};
         savedCategoriesObj[name] = items;
         localStorage.setItem('wheelCustomCategories', JSON.stringify(savedCategoriesObj));
 
@@ -791,6 +865,7 @@ if (saveCustomBtn) {
         // Zavření a vyčištění
         customModal.classList.add('hidden');
         customNameInput.value = '';
+        editingCategoryName = null;
 
         // Zavřít menu po výběru
         toggleMenu(false);
