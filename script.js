@@ -102,9 +102,9 @@ function spinWheel() {
     
     const targetRotation = currentRotation + (extraSpins * 360) + randomAngle;
 
-    // CSS Animace (plynulý dojezd)
+    // CSS Animace (plynulý dojezd) s HW akcelerací pro levnější TV (translateZ)
     canvas.style.transition = 'transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99)';
-    canvas.style.transform = `rotate(${targetRotation}deg)`;
+    canvas.style.transform = `rotate(${targetRotation}deg) translateZ(0)`;
 
     // Počkat na dokončení animace (5 vteřin)
     setTimeout(() => {
@@ -128,6 +128,9 @@ function spinWheel() {
 function showResult(text) {
     resultText.textContent = text;
     resultModal.classList.remove('hidden');
+    
+    // Zaměřit tlačítko v modálu (pro tvOS ovladač a klávesnici)
+    setTimeout(() => closeModalBtn.focus(), 100);
     
     // Temný / nebezpečný confetti efekt
     if (window.confetti) {
@@ -161,6 +164,8 @@ function showResult(text) {
 
 closeModalBtn.addEventListener('click', () => {
     resultModal.classList.add('hidden');
+    // Vrátit focus na hlavní tlačítko po zavření modálu
+    setTimeout(() => spinBtn.focus(), 100);
 });
 
 spinBtn.addEventListener('click', spinWheel);
@@ -170,3 +175,6 @@ window.addEventListener('resize', drawWheel);
 
 // Počáteční vykreslení
 drawWheel();
+
+// Nastavení počátečního focusu na tvOS a klávesnicové navigaci
+setTimeout(() => spinBtn.focus(), 500);
