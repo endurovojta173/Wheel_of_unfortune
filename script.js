@@ -265,33 +265,47 @@ function playTick() {
 
 function playMisfortuneSound() {
     if (!audioCtx) return;
-    const osc = audioCtx.createOscillator();
+    const now = audioCtx.currentTime;
+    
     const gainNode = audioCtx.createGain();
-
-    osc.type = 'sawtooth';
-
-    // Dun dun duuuun (Temný dramatický výsledek)
-    osc.frequency.setValueAtTime(300, audioCtx.currentTime);
-    osc.frequency.setValueAtTime(250, audioCtx.currentTime + 0.25);
-    osc.frequency.setValueAtTime(150, audioCtx.currentTime + 0.5);
-
-    gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
-    gainNode.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 0.05);
-    gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime + 0.2);
-    gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.24);
-
-    gainNode.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 0.25);
-    gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime + 0.45);
-    gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.49);
-
-    gainNode.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.5);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 2.0);
-
-    osc.connect(gainNode);
     gainNode.connect(audioCtx.destination);
-
-    osc.start();
-    osc.stop(audioCtx.currentTime + 2.0);
+    
+    // Radostná, čistá "Tadáá!" fanfára (C5, E5, G5, C6) - ironický kontrast k faktu, že jde o neštěstí
+    const notes = [523.25, 659.25, 783.99, 1046.50]; 
+    const times = [0, 0.12, 0.24, 0.36];
+    
+    const osc1 = audioCtx.createOscillator();
+    const osc2 = audioCtx.createOscillator();
+    
+    // Retro 8-bitový zvuk (čtvercová vlna)
+    osc1.type = 'square';
+    osc2.type = 'square';
+    
+    osc1.connect(gainNode);
+    osc2.connect(gainNode);
+    
+    gainNode.gain.setValueAtTime(0, now);
+    
+    for(let i = 0; i < 4; i++) {
+        // Druhý oscilátor je nepatrně posunutý pro plnější (chorus) zvuk
+        osc1.frequency.setValueAtTime(notes[i], now + times[i]);
+        osc2.frequency.setValueAtTime(notes[i] * 1.005, now + times[i]);
+        
+        if (i < 3) {
+            // První 3 tóny jsou velmi rychlé (Ta-da-da...)
+            gainNode.gain.setValueAtTime(0.15, now + times[i]);
+            gainNode.gain.linearRampToValueAtTime(0, now + times[i] + 0.1);
+        } else {
+            // Poslední tón je dlouhý a postupně utichá (...DAAA!)
+            gainNode.gain.setValueAtTime(0.15, now + times[i]);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + times[i] + 1.5);
+        }
+    }
+    
+    osc1.start(now);
+    osc2.start(now);
+    osc1.stop(now + 2.0);
+    osc2.stop(now + 2.0);
 }
 
 function simulateWheelTicks(duration, totalTicks) {
@@ -304,8 +318,9 @@ function simulateWheelTicks(duration, totalTicks) {
 
         if (progress >= 1) return;
 
-        // Zpomalující křivka pro tiky, odpovídající zhruba CSS cubic-bezier(0.17, 0.67, 0.12, 0.99)
-        let easeOut = 1 - Math.pow(1 - progress, 4);
+        // Zpomalující křivka pro tiky, odpovídající více reálné rychlosti rotace
+        // Nižší exponent znamená, že tikání neustane tak brzy a dojede až do konce
+        let easeOut = 1 - Math.pow(1 - progress, 2.8);
         let currentTick = Math.floor(easeOut * totalTicks);
 
         if (currentTick > lastTick) {
@@ -328,12 +343,12 @@ function spinWheel() {
     isSpinning = true;
     spinBtn.disabled = true;
 
-    // Náhodná doba točení (4.5 až 8.5 vteřin)
-    const spinDurationS = 4.5 + (Math.random() * 4);
+    // Náhodná doba točení (6.5 až 11.5 vteřin pro větší napětí)
+    const spinDurationS = 6.5 + (Math.random() * 5);
     const spinDurationMs = Math.round(spinDurationS * 1000);
 
-    // Počet otáček navázaný zhruba na dobu trvání (aspoň 4)
-    const extraSpins = Math.floor(spinDurationS) + 1;
+    // Počet otáček navázaný na dobu trvání s přidáním další vrstvy náhodnosti
+    const extraSpins = Math.floor(spinDurationS * 1.1) + Math.floor(Math.random() * 4);
     const randomAngle = Math.floor(Math.random() * 360);
 
     const targetRotation = currentRotation + (extraSpins * 360) + randomAngle;
