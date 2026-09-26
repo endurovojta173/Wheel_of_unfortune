@@ -16,16 +16,15 @@
 }
 
 html, body {
-    overflow-x: hidden;
+    overflow: hidden;
     width: 100%;
+    height: 100%;
 }
 
 body {
     font-family: 'Outfit', sans-serif;
     background: var(--bg-gradient);
     color: var(--text-main);
-    min-height: 100vh;
-    overflow-x: hidden;
 }
 
 .layout-wrapper {
@@ -41,11 +40,11 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 20px;
-    gap: 40px;
-    overflow-y: auto;
-    overflow-x: hidden;
+    padding: 2vh 20px;
+    gap: 3vh;
+    overflow: hidden;
     min-width: 0;
+    min-height: 0;
 }
 
 header {
@@ -54,7 +53,7 @@ header {
 }
 
 .glitch {
-    font-size: 3.5rem;
+    font-size: min(3.5rem, 8vw, 6vh);
     font-weight: 900;
     text-transform: uppercase;
     position: relative;
@@ -89,7 +88,7 @@ header {
 
 header p {
     color: var(--text-muted);
-    font-size: 1.1rem;
+    font-size: min(1.1rem, 4vw, 2.5vh);
     margin-top: 10px;
 }
 
@@ -97,7 +96,7 @@ header p {
     position: relative;
     width: 100%;
     aspect-ratio: 1 / 1;
-    max-width: 450px;
+    max-width: min(700px, 90vw, 55vh);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -140,9 +139,9 @@ header p {
 
 .spin-btn {
     position: absolute;
-    bottom: -30px;
-    padding: 15px 50px;
-    font-size: 1.6rem;
+    bottom: min(-30px, -4vh);
+    padding: min(15px, 2vh) min(50px, 8vw);
+    font-size: min(1.6rem, 6vw, 3vh);
     font-weight: 900;
     font-family: 'Outfit', sans-serif;
     color: white;
@@ -433,8 +432,8 @@ header p {
     }
     
     .wheel-container { 
-        max-width: 90vw; 
-        margin-top: 20px;
+        max-width: min(90vw, 55vh); 
+        margin-top: 2vh;
     }
     
     .pointer {
@@ -516,4 +515,99 @@ header p {
         flex-shrink: 0;
         white-space: normal;
     }
+}
+
+/* --- THEME: CIRCUS --- */
+body.theme-circus {
+    --bg-gradient: #f4f1ea;
+    background-blend-mode: normal;
+    --accent-red: #ff0055;
+    --text-main: #222222;
+    --text-muted: #555555;
+}
+
+body.theme-circus .glitch {
+    text-shadow: 2px 2px 0px #ffffff, 4px 4px 0px #ff0055;
+    animation: none;
+    letter-spacing: 5px;
+    font-family: 'Comic Sans MS', 'Outfit', cursive;
+    color: #ff0055;
+}
+body.theme-circus .glitch::before, body.theme-circus .glitch::after { display: none; }
+body.theme-circus header p { color: #222222; font-weight: 700; }
+body.theme-circus .glass {
+    background: rgba(255, 255, 255, 0.95);
+    border: 5px solid #ffcc00;
+}
+body.theme-circus .sidebar {
+    background: rgba(255, 237, 74, 0.95);
+    border-right: 3px solid #ff7b00;
+}
+body.theme-circus .set-list li {
+    background: rgba(255, 255, 255, 0.5);
+    color: #333;
+    border-color: #ffcc00;
+}
+body.theme-circus .set-list li.active {
+    background: linear-gradient(45deg, #ff0000, #ff5500);
+    color: white;
+}
+body.theme-circus .pointer {
+    border-top-color: #ffcc00;
+    filter: drop-shadow(0px 5px 5px rgba(0,0,0,0.3));
+}
+body.theme-circus .btn-bg {
+    background: linear-gradient(45deg, #ffcc00, #ff7b00);
+    box-shadow: 0 10px 25px rgba(255, 123, 0, 0.5);
+}
+
+/* --- THEME: FOLKLORE --- */
+body.theme-folklore {
+    --bg-gradient: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><path d="M40 10 C45 30, 70 35, 70 40 C70 45, 45 50, 40 70 C35 50, 10 45, 10 40 C10 35, 35 30, 40 10 Z" fill="%231565c0" opacity="0.06"/><circle cx="40" cy="40" r="6" fill="%23d32f2f" opacity="0.08"/></svg>') #fdfbf7;
+    background-blend-mode: normal;
+    --accent-red: #d32f2f;
+    --text-main: #1a1a1a;
+    --text-muted: #4a4a4a;
+}
+
+body.theme-folklore .glitch {
+    text-shadow: none;
+    animation: none;
+    font-family: 'Georgia', serif;
+    border-bottom: 2px dashed #1565c0;
+    padding-bottom: 10px;
+    color: #1565c0;
+}
+body.theme-folklore .glitch::before, body.theme-folklore .glitch::after { display: none; }
+body.theme-folklore .btn-bg {
+    background: linear-gradient(45deg, #d32f2f, #b71c1c);
+    border-radius: 5px;
+    box-shadow: 0 10px 25px rgba(211, 47, 47, 0.4);
+}
+body.theme-folklore .spin-btn { border-radius: 5px; font-family: 'Georgia', serif; }
+body.theme-folklore .glass {
+    background: rgba(253, 251, 247, 0.95);
+    border: 2px solid #1565c0;
+    box-shadow: 0 10px 40px rgba(21, 101, 192, 0.2);
+}
+body.theme-folklore .sidebar {
+    background: rgba(253, 251, 247, 0.98);
+    border-right: 2px solid #1565c0;
+}
+body.theme-folklore .set-list li {
+    background: white;
+    color: #1a1a1a;
+    border: 1px solid #1565c0;
+    border-radius: 0;
+}
+body.theme-folklore .set-list li.active {
+    background: #1565c0;
+    color: white;
+}
+body.theme-folklore .menu-header h2 {
+    color: #d32f2f;
+    font-family: 'Georgia', serif;
+}
+body.theme-folklore .pointer {
+    border-top-color: #1565c0;
 }

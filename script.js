@@ -52,18 +52,40 @@ const questionSets = {
 let currentSetName = "Párty trestné (Základní)";
 let misfortunes = questionSets[currentSetName];
 
-// Ostré barvy - kyberpunk / tmavý styl (střídání dvou primárních barev pro kontrast)
-const colors = [
-    '#FF3366', '#1A1A2E', '#E94560', '#16213E', 
-    '#FF2E63', '#0F3460', '#FF0055', '#2A2A4A'
-];
+// Ostré barvy - motivy
+const themeColors = {
+    default: [
+        '#FF3366', '#1A1A2E', '#E94560', '#16213E', 
+        '#FF2E63', '#0F3460', '#FF0055', '#2A2A4A'
+    ],
+    circus: [
+        '#FF0000', '#FF9900', '#FFEA00', '#33CC33', 
+        '#0099FF', '#9900FF'
+    ],
+    folklore: [
+        '#D32F2F', '#FFFFFF', '#1976D2', '#FFFFFF', 
+        '#388E3C', '#FFFFFF', '#FBC02D', '#FFFFFF'
+    ]
+};
+
+let currentTheme = 'default';
+let colors = themeColors[currentTheme];
+
+function getContrastColor(hexColor) {
+    const hex = hexColor.replace('#', '');
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 2), 16);
+    const b = parseInt(hex.substring(4, 2), 16);
+    const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+    return (yiq >= 128) ? '#1a1a1a' : '#FFFFFF';
+}
 
 let currentRotation = 0;
 let isSpinning = false;
 
 function drawWheel() {
-    // Pro zajištění ostrého obrazu i na mobilech s vysokým DPI (Retina)
-    const baseSize = 500;
+    // Zvýšené rozlišení (baseSize) pro větší kvalitu na desktopech
+    const baseSize = 800;
     const scale = window.devicePixelRatio || 1;
     
     canvas.width = baseSize * scale;
@@ -75,7 +97,7 @@ function drawWheel() {
     const arc = (Math.PI * 2) / numSegments;
     const centerX = baseSize / 2;
     const centerY = baseSize / 2;
-    const radius = centerX - 10; // malý okraj
+    const radius = centerX - 15; // malý okraj
 
     ctx.clearRect(0, 0, baseSize, baseSize);
 
@@ -90,8 +112,8 @@ function drawWheel() {
         ctx.fill();
         
         // Ohraničení segmentu
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.15)";
         ctx.stroke();
 
         // Nakreslení textu
@@ -100,29 +122,63 @@ function drawWheel() {
         ctx.rotate(angle + arc / 2);
         ctx.textAlign = "right";
         ctx.textBaseline = "middle";
-        ctx.fillStyle = "#FFFFFF";
-        ctx.font = "bold 22px 'Outfit', sans-serif";
-        ctx.shadowColor = "rgba(0,0,0,0.8)";
-        ctx.shadowBlur = 4;
         
-        // Vykreslení textu na konkrétní pozici v rámci segmentu
-        ctx.fillText(misfortunes[i], radius - 30, 0);
+        const segmentColor = colors[i % colors.length];
+        const textColor = getContrastColor(segmentColor);
+        ctx.fillStyle = textColor;
+        
+        // Dynamická velikost písma - přepočteno na nové rozlišení 800px
+        const fontSize = numSegments > 10 ? 22 : 28;
+        ctx.font = `bold ${fontSize}px 'Outfit', sans-serif`;
+        ctx.shadowColor = textColor === '#FFFFFF' ? "rgba(0,0,0,0.9)" : "rgba(255,255,255,0.7)";
+        ctx.shadowBlur = textColor === '#FFFFFF' ? 8 : 4;
+        
+        const text = misfortunes[i];
+        const maxWidth = radius - 110; // Volný prostor pro text směrem do středu
+        const words = text.split(' ');
+        let line = '';
+        let lines = [];
+        
+        // Zalamování textu na více řádků
+        for (let n = 0; n < words.length; n++) {
+            const testLine = line + words[n] + ' ';
+            const metrics = ctx.measureText(testLine);
+            
+            if (metrics.width > maxWidth && n > 0) {
+                lines.push(line);
+                line = words[n] + ' ';
+            } else {
+                line = testLine;
+            }
+        }
+        lines.push(line);
+        
+        // Vykreslení řádků (vertikálně vycentrované)
+        const lineHeight = fontSize + 6;
+        const totalHeight = lines.length * lineHeight;
+        const startY = -(totalHeight / 2) + (lineHeight / 2);
+        
+        for(let j = 0; j < lines.length; j++) {
+            // Zarovnání k vnějšímu okraji
+            ctx.fillText(lines[j].trim(), radius - 45, startY + (j * lineHeight));
+        }
+        
         ctx.restore();
     }
     
     // Vnitřní kruh (střed kola)
     ctx.beginPath();
-    ctx.arc(centerX, centerY, 25, 0, Math.PI * 2);
-    ctx.fillStyle = "#1a1a2e";
+    ctx.arc(centerX, centerY, 40, 0, Math.PI * 2);
+    ctx.fillStyle = currentTheme === 'folklore' ? '#FFFFFF' : (currentTheme === 'circus' ? '#FFFFFF' : '#1a1a2e');
     ctx.fill();
-    ctx.lineWidth = 4;
-    ctx.strokeStyle = "#FF3366";
+    ctx.lineWidth = 6;
+    ctx.strokeStyle = currentTheme === 'folklore' ? '#d32f2f' : (currentTheme === 'circus' ? '#ff0055' : '#FF3366');
     ctx.stroke();
     
     // Malý ozdobný středový bod
     ctx.beginPath();
-    ctx.arc(centerX, centerY, 8, 0, Math.PI * 2);
-    ctx.fillStyle = "#FF3366";
+    ctx.arc(centerX, centerY, 13, 0, Math.PI * 2);
+    ctx.fillStyle = currentTheme === 'folklore' ? '#1565C0' : (currentTheme === 'circus' ? '#0099FF' : '#FF3366');
     ctx.fill();
 }
 
@@ -382,3 +438,37 @@ function populateMenu() {
 
 // Inicializace postranního menu
 populateMenu();
+
+// --- Logika pro výběr vzhledu (Themes) ---
+const themeList = document.getElementById('themeList');
+if (themeList) {
+    const themeItems = themeList.querySelectorAll('li');
+    themeItems.forEach(li => {
+        li.tabIndex = 0;
+        
+        const selectTheme = () => {
+            if (isSpinning) return;
+            currentTheme = li.getAttribute('data-theme');
+            colors = themeColors[currentTheme];
+            
+            // Změna třídy na body
+            document.body.className = currentTheme === 'default' ? '' : `theme-${currentTheme}`;
+            
+            // Obarvení aktivní položky v menu
+            themeItems.forEach(el => el.classList.remove('active'));
+            li.classList.add('active');
+            
+            // Překreslení kola
+            drawWheel();
+            
+            if (window.innerWidth <= 768) {
+                toggleMenu(false);
+            }
+        };
+        
+        li.addEventListener('click', selectTheme);
+        li.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') selectTheme();
+        });
+    });
+}
