@@ -37,6 +37,7 @@
         </aside>
         
         <div class="app-container">
+        <button id="infoBtn" class="info-btn" aria-label="Informace o sadě">?</button>
         <header>
             <h1 class="glitch" data-text="KOLO NEŠTĚSTÍ">KOLO NEŠTĚSTÍ</h1>
             <p>Zatoč si pro svou denní dávku utrpení.</p>
@@ -73,6 +74,20 @@
                     <button id="saveCustomBtn" class="close-btn" style="flex: 1;">Vytvořit</button>
                     <button id="cancelCustomBtn" class="close-btn" style="flex: 1; background: transparent; border: 1px solid var(--text-muted); color: var(--text-main);">Zrušit</button>
                 </div>
+            </div>
+        </div>
+
+        <!-- Info modal -->
+        <div id="infoModal" class="modal hidden">
+            <div class="modal-content glass" style="width: 90%; max-width: 500px; text-align: left; max-height: 80vh; display: flex; flex-direction: column;">
+                <h2 id="infoModalTitle" style="margin-bottom: 15px; font-size: 1.5rem;">Seznam úkolů</h2>
+                <div id="infoModalList" style="flex: 1; overflow-y: auto; margin-bottom: 15px; padding-right: 10px; font-size: 0.95rem; line-height: 1.4;">
+                    <!-- Seznam se naplní z JS -->
+                </div>
+                <div style="font-size: 0.85rem; text-align: center; margin-bottom: 15px; color: var(--text-muted);">
+                    Vytvořil: <a href="https://github.com/endurovojta173" target="_blank" style="color: var(--accent-red); text-decoration: none; font-weight: bold;">endurovojta173</a>
+                </div>
+                <button id="closeInfoBtn" class="close-btn" style="width: 100%;">Zavřít</button>
             </div>
         </div>
     </div>

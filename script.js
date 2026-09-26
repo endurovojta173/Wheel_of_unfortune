@@ -13,17 +13,22 @@ const setList = document.getElementById('setList');
 
 // Sady otázek
 const questionSets = {
-    "Párty trestné (Základní)": [
-        "Jaký byl tvůj největší trapas?",
+    "Základní": [
         "Udělej 10 poctivých dřepů!",
-        "Ukaž poslední fotku v mobilu",
-        "Zatanči na 10 vteřin",
-        "Platíš kávu dalšímu na řadě!",
-        "Řekni fakt dobrý vtip",
-        "Ukaž poslední zprávu v chatu",
-        "Udělej 10 kliků!",
-        "Jaký je tvůj nejhorší zlozvyk?",
-        "Zavolej náhodnému kontaktu"
+        "Stůj dalších 5 kol na jedné noze",
+        "Ukaž svou 3. nejnovější fotku/video z galerie",
+        "Sundeš si na 5 kol jeden kus oblečení",
+        "Nech si od někoho namalovat něco malého fixou",
+        "Zpívej všechno, co řekneš, po další 2 kola",
+        "Předveď pantomimu na zadané téma",
+        "Napodobuj zvíře podle volby ostatních po další 3 kola",
+        "Zkus rozesmát osobu naproti tobě (máš 30 vteřin)",
+        "Mluv 3 další kola s cizím přízvukem",
+        "Další 3 kola o sobě mluv pouze ve 3. osobě",
+        "Vyměň si na jedno kolo oblečení s někým dalším",
+        "Zazpívej refrén své nejoblíbenější písničky",
+        "Ukaž všem svoje poslední vyhledávání na Instagramu",
+        "Zavři oči a hádej předmět, který ti dají do ruky"
     ],
     "Odvážné výzvy (Hardcore)": [
         "Sněz lžičku chilli omáčky",
@@ -39,7 +44,7 @@ const questionSets = {
     "Čísla 0-20": Array.from({length: 21}, (_, i) => i.toString())
 };
 
-let currentSetName = "Párty trestné (Základní)";
+let currentSetName = "Základní";
 let misfortunes = questionSets[currentSetName];
 
 // Ostré barvy - motivy
@@ -580,5 +585,36 @@ if (saveCustomBtn) {
         if (window.innerWidth <= 768) {
             toggleMenu(false);
         }
+    });
+}
+
+// --- Logika pro INFO modal ---
+const infoBtn = document.getElementById('infoBtn');
+const infoModal = document.getElementById('infoModal');
+const closeInfoBtn = document.getElementById('closeInfoBtn');
+const infoModalList = document.getElementById('infoModalList');
+const infoModalTitle = document.getElementById('infoModalTitle');
+
+if (infoBtn) {
+    infoBtn.addEventListener('click', () => {
+        // Naplnit data
+        infoModalTitle.textContent = currentSetName;
+        
+        let listHTML = '<ul>';
+        misfortunes.forEach(item => {
+            listHTML += `<li>• ${item}</li>`;
+        });
+        listHTML += '</ul>';
+        
+        infoModalList.innerHTML = listHTML;
+        
+        // Zobrazit
+        infoModal.classList.remove('hidden');
+    });
+}
+
+if (closeInfoBtn) {
+    closeInfoBtn.addEventListener('click', () => {
+        infoModal.classList.add('hidden');
     });
 }

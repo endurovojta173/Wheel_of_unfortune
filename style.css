@@ -750,3 +750,58 @@ body.theme-circus .add-row-btn:hover, body.theme-folklore .add-row-btn:hover {
 #customItemsContainer .custom-item-wrapper:not(:last-child) .add-row-btn {
     display: none;
 }
+
+/* --- INFO TLAČÍTKO --- */
+.info-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: var(--text-main);
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 100;
+    transition: all 0.2s;
+    backdrop-filter: blur(5px);
+}
+.info-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+body.theme-circus .info-btn {
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    color: var(--text-main);
+}
+body.theme-circus .info-btn:hover {
+    background: rgba(255, 255, 255, 0.9);
+}
+body.theme-folklore .info-btn {
+    background: rgba(255, 255, 255, 0.8);
+    border: 2px dashed #1565c0;
+    color: #1565c0;
+}
+body.theme-folklore .info-btn:hover {
+    background: #ffffff;
+}
+
+#infoModalList ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+#infoModalList li {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+#infoModalList li:last-child {
+    border-bottom: none;
+}
+body.theme-circus #infoModalList li, body.theme-folklore #infoModalList li {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
