@@ -427,10 +427,66 @@ menuOverlay.addEventListener('click', () => toggleMenu(false));
 
 function populateMenu() {
     setList.innerHTML = '';
+    const defaultSets = ['Základní', 'Odvážné výzvy (Hardcore)', 'Čísla 0-10', 'Čísla 0-20'];
+    
     Object.keys(questionSets).forEach(setName => {
         const li = document.createElement('li');
-        li.textContent = setName;
         li.tabIndex = 0; // Pro ovladače a klávesnici
+        
+        li.style.display = 'flex';
+        li.style.justifyContent = 'space-between';
+        li.style.alignItems = 'center';
+        
+        const labelSpan = document.createElement('span');
+        labelSpan.textContent = setName;
+        li.appendChild(labelSpan);
+
+        if (!defaultSets.includes(setName)) {
+            const deleteBtn = document.createElement('button');
+            deleteBtn.innerHTML = '🗑️';
+            deleteBtn.title = 'Smazat kategorii';
+            deleteBtn.style.background = 'transparent';
+            deleteBtn.style.border = 'none';
+            deleteBtn.style.cursor = 'pointer';
+            deleteBtn.style.fontSize = '1.2rem';
+            deleteBtn.style.padding = '5px';
+            deleteBtn.style.marginLeft = '10px';
+            deleteBtn.style.filter = 'grayscale(100%) opacity(0.7)';
+            deleteBtn.style.transition = 'filter 0.2s, transform 0.2s';
+            
+            deleteBtn.addEventListener('mouseenter', () => {
+                deleteBtn.style.filter = 'grayscale(0%) opacity(1)';
+                deleteBtn.style.transform = 'scale(1.2)';
+            });
+            deleteBtn.addEventListener('mouseleave', () => {
+                deleteBtn.style.filter = 'grayscale(100%) opacity(0.7)';
+                deleteBtn.style.transform = 'scale(1)';
+            });
+            
+            deleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Zabránit výběru kategorie
+                if (confirm(`Opravdu chcete smazat vlastní kategorii "${setName}"?`)) {
+                    // Smazat ze seznamu
+                    delete questionSets[setName];
+                    
+                    // Smazat z localStorage
+                    const savedCategoriesObj = JSON.parse(localStorage.getItem('wheelCustomCategories')) || {};
+                    delete savedCategoriesObj[setName];
+                    localStorage.setItem('wheelCustomCategories', JSON.stringify(savedCategoriesObj));
+                    
+                    // Pokud uživatel smazal kategorii, na které právě je, vrátíme ho na Základní
+                    if (currentSetName === setName) {
+                        currentSetName = 'Základní';
+                        misfortunes = questionSets[currentSetName];
+                        drawWheel();
+                    }
+                    
+                    // Překreslit menu
+                    populateMenu();
+                }
+            });
+            li.appendChild(deleteBtn);
+        }
 
         if (setName === currentSetName) {
             li.classList.add('active');
