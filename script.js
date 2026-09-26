@@ -7,14 +7,16 @@ const closeModalBtn = document.getElementById('closeModalBtn');
 
 // Pole možností, které lze jednoduše rozšiřovat a upravovat
 const misfortunes = [
-    "Smazaná produkční DB",
-    "Páteční deploy spadnul",
-    "Nekonečná smyčka",
-    "Merge konflikt (50+)",
-    "Rozlitá káva",
-    "Spadl internet",
-    "Zapomenuté heslo",
-    "Klient změnil zadání"
+    "Jaký byl tvůj největší trapas?",
+    "Udělej 10 poctivých dřepů!",
+    "Ukaž poslední fotku v mobilu",
+    "Zatanči na 10 vteřin",
+    "Platíš kávu dalšímu na řadě!",
+    "Řekni fakt dobrý vtip",
+    "Ukaž poslední zprávu v chatu",
+    "Udělej 10 kliků!",
+    "Jaký je tvůj nejhorší zlozvyk?",
+    "Zavolej náhodnému kontaktu"
 ];
 
 // Ostré barvy - kyberpunk / tmavý styl (střídání dvou primárních barev pro kontrast)
