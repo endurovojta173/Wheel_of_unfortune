@@ -464,6 +464,11 @@ header p {
     #resultText {
         font-size: 1.4rem;
     }
+    
+    .close-btn {
+        padding: 12px 20px;
+        font-size: 1rem;
+    }
 }
 
 @media (max-width: 768px) {

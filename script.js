@@ -444,10 +444,8 @@ function populateMenu() {
             // Okamžité překreslení kola pro novou sadu textů
             drawWheel();
             
-            // Zavřít menu na mobilu po výběru
-            if (window.innerWidth <= 768) {
-                toggleMenu(false);
-            }
+            // Zavřít menu po výběru vždy
+            toggleMenu(false);
         };
         
         li.addEventListener('click', selectSet);
@@ -484,9 +482,8 @@ if (themeList) {
             // Překreslení kola
             drawWheel();
             
-            if (window.innerWidth <= 768) {
-                toggleMenu(false);
-            }
+            // Zavřít menu po výběru
+            toggleMenu(false);
         };
         
         li.addEventListener('click', selectTheme);
@@ -558,9 +555,8 @@ if (createCustomBtn) {
         customModal.classList.remove('hidden');
         customNameInput.focus();
         
-        if (window.innerWidth <= 768) {
-            toggleMenu(false);
-        }
+        // Zavřít menu po kliknutí
+        toggleMenu(false);
     });
 }
 
@@ -598,9 +594,8 @@ if (saveCustomBtn) {
         customModal.classList.add('hidden');
         customNameInput.value = '';
         
-        if (window.innerWidth <= 768) {
-            toggleMenu(false);
-        }
+        // Zavřít menu po výběru
+        toggleMenu(false);
     });
 }
 
