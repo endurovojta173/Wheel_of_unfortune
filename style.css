@@ -277,8 +277,8 @@ header p {
     position: absolute;
     top: 20px;
     left: 20px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--menu-btn-bg, rgba(255, 255, 255, 0.1));
+    border: 1px solid var(--menu-btn-border, rgba(255, 255, 255, 0.2));
     border-radius: 12px;
     padding: 10px;
     cursor: pointer;
@@ -290,10 +290,15 @@ header p {
     backdrop-filter: blur(5px);
 }
 
+.menu-toggle-btn svg {
+    fill: var(--text-main);
+    transition: fill 0.3s;
+}
+
 .menu-toggle-btn:hover, .menu-toggle-btn:focus-visible, .menu-toggle-btn:focus {
-    background: rgba(255, 255, 255, 0.2);
+    background: var(--menu-btn-hover, rgba(255, 255, 255, 0.2));
     outline: none;
-    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 0 4px var(--menu-btn-shadow, rgba(255, 255, 255, 0.3));
 }
 
 .menu-toggle-btn:active {
@@ -524,6 +529,11 @@ body.theme-circus {
     --accent-red: #ff0055;
     --text-main: #222222;
     --text-muted: #555555;
+    
+    --menu-btn-bg: rgba(0, 0, 0, 0.05);
+    --menu-btn-border: rgba(0, 0, 0, 0.1);
+    --menu-btn-hover: rgba(0, 0, 0, 0.1);
+    --menu-btn-shadow: rgba(0, 0, 0, 0.2);
 }
 
 body.theme-circus .glitch {
@@ -560,6 +570,15 @@ body.theme-circus .btn-bg {
     background: linear-gradient(45deg, #ffcc00, #ff7b00);
     box-shadow: 0 10px 25px rgba(255, 123, 0, 0.5);
 }
+body.theme-circus .close-btn {
+    color: #222;
+    background: #ffcc00;
+    border-color: #ffaa00;
+}
+body.theme-circus .close-btn:hover, body.theme-circus .close-btn:focus {
+    background: #ffaa00;
+    box-shadow: 0 0 0 4px rgba(255, 204, 0, 0.5);
+}
 
 /* --- THEME: FOLKLORE --- */
 body.theme-folklore {
@@ -568,6 +587,11 @@ body.theme-folklore {
     --accent-red: #d32f2f;
     --text-main: #1a1a1a;
     --text-muted: #4a4a4a;
+    
+    --menu-btn-bg: rgba(21, 101, 192, 0.1);
+    --menu-btn-border: rgba(21, 101, 192, 0.3);
+    --menu-btn-hover: rgba(21, 101, 192, 0.2);
+    --menu-btn-shadow: rgba(21, 101, 192, 0.4);
 }
 
 body.theme-folklore .glitch {
@@ -610,4 +634,14 @@ body.theme-folklore .menu-header h2 {
 }
 body.theme-folklore .pointer {
     border-top-color: #1565c0;
+}
+body.theme-folklore .close-btn {
+    color: white;
+    background: #d32f2f;
+    border-color: #b71c1c;
+    font-family: 'Georgia', serif;
+}
+body.theme-folklore .close-btn:hover, body.theme-folklore .close-btn:focus {
+    background: #b71c1c;
+    box-shadow: 0 0 0 4px rgba(211, 47, 47, 0.4);
 }
