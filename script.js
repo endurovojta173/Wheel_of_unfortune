@@ -646,15 +646,24 @@ if (shareCategoryBtn) {
         const encoded = btoa(encodeURIComponent(JSON.stringify(dataToShare)));
         
         const url = new URL(window.location.href);
+        // Vyčistit předchozí případné sharedCategory parametry, aby se neřetězily
+        url.searchParams.delete('sharedCategory');
         url.searchParams.set('sharedCategory', encoded);
+        const link = url.toString();
         
-        navigator.clipboard.writeText(url.toString()).then(() => {
-            const originalText = shareCategoryBtn.textContent;
-            shareCategoryBtn.textContent = 'Zkopírováno!';
-            setTimeout(() => { shareCategoryBtn.textContent = originalText; }, 2000);
-        }).catch(err => {
-            alert('Nepodařilo se zkopírovat odkaz automaticky. Zde je váš odkaz:\n\n' + url.toString());
-        });
+        // Zkusíme použít moderní Clipboard API
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(link).then(() => {
+                const originalText = shareCategoryBtn.textContent;
+                shareCategoryBtn.textContent = 'Zkopírováno!';
+                setTimeout(() => { shareCategoryBtn.textContent = originalText; }, 2000);
+            }).catch(err => {
+                prompt('Nepodařilo se zkopírovat odkaz automaticky. Zkopírujte si ho ručně:', link);
+            });
+        } else {
+            // Fallback pro starší prohlížeče nebo in-app prohlížeče
+            prompt('Zkopírujte si tento odkaz pro sdílení:', link);
+        }
     });
 }
 
