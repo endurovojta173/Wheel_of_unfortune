@@ -56,6 +56,10 @@ const questionSets = {
     "Čísla 0-20": Array.from({length: 21}, (_, i) => i.toString())
 };
 
+// Načtení vlastních kategorií z lokální paměti
+const savedCategories = JSON.parse(localStorage.getItem('wheelCustomCategories')) || {};
+Object.assign(questionSets, savedCategories);
+
 let currentSetName = "Základní";
 let misfortunes = questionSets[currentSetName];
 
@@ -585,6 +589,11 @@ if (saveCustomBtn) {
         questionSets[name] = items;
         currentSetName = name;
         misfortunes = questionSets[name];
+        
+        // Uložení do lokální paměti (localStorage)
+        const savedCategoriesObj = JSON.parse(localStorage.getItem('wheelCustomCategories')) || {};
+        savedCategoriesObj[name] = items;
+        localStorage.setItem('wheelCustomCategories', JSON.stringify(savedCategoriesObj));
         
         // Aktualizace UI
         populateMenu();
