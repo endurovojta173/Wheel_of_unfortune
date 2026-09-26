@@ -11,6 +11,35 @@ const sidebar = document.getElementById('sidebar');
 const menuOverlay = document.getElementById('menuOverlay');
 const setList = document.getElementById('setList');
 
+// --- Custom Confirm Modal ---
+const confirmModal = document.getElementById('confirmModal');
+const confirmModalText = document.getElementById('confirmModalText');
+const confirmYesBtn = document.getElementById('confirmYesBtn');
+const confirmNoBtn = document.getElementById('confirmNoBtn');
+let pendingConfirmAction = null;
+
+if (confirmYesBtn && confirmNoBtn) {
+    confirmNoBtn.addEventListener('click', () => {
+        confirmModal.classList.add('hidden');
+        pendingConfirmAction = null;
+    });
+    
+    confirmYesBtn.addEventListener('click', () => {
+        confirmModal.classList.add('hidden');
+        if (pendingConfirmAction) {
+            pendingConfirmAction();
+            pendingConfirmAction = null;
+        }
+    });
+}
+
+function showConfirm(text, callback) {
+    if (!confirmModal) return;
+    confirmModalText.textContent = text;
+    pendingConfirmAction = callback;
+    confirmModal.classList.remove('hidden');
+}
+
 // Sady otázek
 const questionSets = {
     "Základní": [
@@ -443,29 +472,36 @@ function populateMenu() {
 
         if (!defaultSets.includes(setName)) {
             const deleteBtn = document.createElement('button');
-            deleteBtn.innerHTML = '🗑️';
+            deleteBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>';
             deleteBtn.title = 'Smazat kategorii';
             deleteBtn.style.background = 'transparent';
             deleteBtn.style.border = 'none';
             deleteBtn.style.cursor = 'pointer';
-            deleteBtn.style.fontSize = '1.2rem';
+            deleteBtn.style.color = '#ff3366'; // Červená barva
             deleteBtn.style.padding = '5px';
             deleteBtn.style.marginLeft = '10px';
-            deleteBtn.style.filter = 'grayscale(100%) opacity(0.7)';
-            deleteBtn.style.transition = 'filter 0.2s, transform 0.2s';
+            deleteBtn.style.opacity = '0.7';
+            deleteBtn.style.display = 'flex';
+            deleteBtn.style.alignItems = 'center';
+            deleteBtn.style.justifyContent = 'center';
+            deleteBtn.style.transition = 'opacity 0.2s, transform 0.2s';
             
             deleteBtn.addEventListener('mouseenter', () => {
-                deleteBtn.style.filter = 'grayscale(0%) opacity(1)';
+                deleteBtn.style.opacity = '1';
                 deleteBtn.style.transform = 'scale(1.2)';
             });
             deleteBtn.addEventListener('mouseleave', () => {
-                deleteBtn.style.filter = 'grayscale(100%) opacity(0.7)';
+                deleteBtn.style.opacity = '0.7';
                 deleteBtn.style.transform = 'scale(1)';
             });
             
             deleteBtn.addEventListener('click', (e) => {
                 e.stopPropagation(); // Zabránit výběru kategorie
-                if (confirm(`Opravdu chcete smazat vlastní kategorii "${setName}"?`)) {
+                
+                // Zavřít menu, aby neclonilo modálnímu oknu pro smazání
+                toggleMenu(false);
+                
+                showConfirm(`Opravdu chcete smazat vlastní kategorii "${setName}"?`, () => {
                     // Smazat ze seznamu
                     delete questionSets[setName];
                     
@@ -483,7 +519,7 @@ function populateMenu() {
                     
                     // Překreslit menu
                     populateMenu();
-                }
+                });
             });
             li.appendChild(deleteBtn);
         }
