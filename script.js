@@ -557,6 +557,10 @@ if (createCustomBtn) {
         addCustomRow(); // Přidá první řádek
         customModal.classList.remove('hidden');
         customNameInput.focus();
+        
+        if (window.innerWidth <= 768) {
+            toggleMenu(false);
+        }
     });
 }
 
