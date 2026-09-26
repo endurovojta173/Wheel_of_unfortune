@@ -805,3 +805,10 @@ body.theme-folklore .info-btn:hover {
 body.theme-circus #infoModalList li, body.theme-folklore #infoModalList li {
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
+
+/* --- VYSTŘEDĚNÍ MODALŮ PŘI OTEVŘENÉM MENU (DESKTOP) --- */
+@media (min-width: 769px) {
+    .sidebar:not(.collapsed) ~ .app-container .modal {
+        padding-left: 320px;
+    }
+}
