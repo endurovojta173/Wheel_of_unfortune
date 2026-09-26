@@ -941,22 +941,29 @@ window.addEventListener('DOMContentLoaded', () => {
             const sharedData = JSON.parse(decodedStr);
 
             if (sharedData && sharedData.name && Array.isArray(sharedData.items) && sharedData.items.length >= 2) {
+                let importName = sharedData.name;
+                const defaultSets = ['Základní', 'Odvážné výzvy (Hardcore)', 'Čísla 0-10', 'Čísla 0-20'];
+                
+                if (defaultSets.includes(importName)) {
+                    importName = importName + ' (Kopie)';
+                }
+
                 // Přidáme do localStorage
                 const savedCategoriesObj = JSON.parse(localStorage.getItem('wheelCustomCategories')) || {};
-                savedCategoriesObj[sharedData.name] = sharedData.items;
+                savedCategoriesObj[importName] = sharedData.items;
                 localStorage.setItem('wheelCustomCategories', JSON.stringify(savedCategoriesObj));
 
                 // Aktivovat do paměti
-                questionSets[sharedData.name] = sharedData.items;
-                currentSetName = sharedData.name;
-                misfortunes = questionSets[sharedData.name];
+                questionSets[importName] = sharedData.items;
+                currentSetName = importName;
+                misfortunes = questionSets[importName];
 
                 // Přečistit URL bez znovunačtení stránky
                 const newUrl = new URL(window.location.href);
                 newUrl.searchParams.delete('sharedCategory');
                 window.history.replaceState({}, document.title, newUrl.toString());
 
-                alert(`Kategorie "${sharedData.name}" byla úspěšně importována!`);
+                alert(`Kategorie "${importName}" byla úspěšně importována!`);
 
                 populateMenu();
                 drawWheel();
