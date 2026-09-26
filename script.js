@@ -652,7 +652,7 @@ if (shareCategoryBtn) {
         const link = url.toString();
 
         // Zkusíme použít moderní Clipboard API
-        if (navigator.clipboard && window.isSecureContext) {
+        if (navigator.clipboard && navigator.clipboard.writeText && window.isSecureContext) {
             navigator.clipboard.writeText(link).then(() => {
                 const originalText = shareCategoryBtn.textContent;
                 shareCategoryBtn.textContent = 'Zkopírováno!';
