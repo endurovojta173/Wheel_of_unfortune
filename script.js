@@ -93,8 +93,99 @@ function drawWheel() {
     ctx.fill();
 }
 
+// Web Audio API kontext
+let audioCtx;
+
+function initAudio() {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+}
+
+function playTick() {
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    
+    osc.type = 'sine'; // Kratký, tlumený zvuk tikání
+    osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.05);
+    
+    gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+    
+    osc.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.05);
+}
+
+function playMisfortuneSound() {
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    
+    osc.type = 'sawtooth';
+    
+    // Dun dun duuuun (Temný dramatický výsledek)
+    osc.frequency.setValueAtTime(300, audioCtx.currentTime); 
+    osc.frequency.setValueAtTime(250, audioCtx.currentTime + 0.25);
+    osc.frequency.setValueAtTime(150, audioCtx.currentTime + 0.5);
+    
+    gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 0.05);
+    gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime + 0.2);
+    gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.24);
+    
+    gainNode.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 0.25);
+    gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime + 0.45);
+    gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.49);
+    
+    gainNode.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.5);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 2.0);
+    
+    osc.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    
+    osc.start();
+    osc.stop(audioCtx.currentTime + 2.0);
+}
+
+function simulateWheelTicks(duration, totalTicks) {
+    let startTime = null;
+    let lastTick = 0;
+    
+    function step(timestamp) {
+        if (!startTime) startTime = timestamp;
+        let progress = (timestamp - startTime) / duration;
+        
+        if (progress >= 1) return;
+        
+        // Zpomalující křivka pro tiky, odpovídající zhruba CSS cubic-bezier(0.17, 0.67, 0.12, 0.99)
+        let easeOut = 1 - Math.pow(1 - progress, 4); 
+        let currentTick = Math.floor(easeOut * totalTicks);
+        
+        if (currentTick > lastTick) {
+            playTick();
+            lastTick = currentTick;
+        }
+        
+        if (isSpinning) {
+            requestAnimationFrame(step);
+        }
+    }
+    requestAnimationFrame(step);
+}
+
 function spinWheel() {
     if (isSpinning) return;
+    
+    initAudio(); // Probuzení audia po kliknutí
+
     isSpinning = true;
     spinBtn.disabled = true;
 
@@ -103,6 +194,11 @@ function spinWheel() {
     const randomAngle = Math.floor(Math.random() * 360);
     
     const targetRotation = currentRotation + (extraSpins * 360) + randomAngle;
+    
+    // Spočítat, kolik dílků kolo celkem mine, a nastavit adekvátní počet "tiků"
+    const rotationDiff = targetRotation - currentRotation;
+    const segmentsPassed = Math.floor(rotationDiff / (360 / misfortunes.length));
+    simulateWheelTicks(5000, segmentsPassed);
 
     // CSS Animace (plynulý dojezd) s HW akcelerací pro levnější TV (translateZ)
     canvas.style.transition = 'transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99)';
@@ -133,6 +229,8 @@ function showResult(text) {
     
     // Zaměřit tlačítko v modálu (pro tvOS ovladač a klávesnici)
     setTimeout(() => closeModalBtn.focus(), 100);
+    
+    playMisfortuneSound(); // Přehrát dramatický zvuk výhry
     
     // Temný / nebezpečný confetti efekt
     if (window.confetti) {
