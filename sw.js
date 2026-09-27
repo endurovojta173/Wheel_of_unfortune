@@ -1,10 +1,13 @@
-const CACHE_NAME = 'kolo-nestesti-v1';
+const CACHE_NAME = 'kolo-nestesti-v2';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './style.css',
   './script.js',
   './manifest.json',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
+  './favicon.ico',
   'https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap',
   'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js'
 ];
