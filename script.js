@@ -108,8 +108,11 @@ const themeColors = {
     ]
 };
 
-let currentTheme = 'default';
+let currentTheme = localStorage.getItem('wheelTheme') || 'default';
 let colors = themeColors[currentTheme];
+if (currentTheme !== 'default') {
+    document.body.className = `theme-${currentTheme}`;
+}
 
 function getContrastColor(hexColor) {
     const hex = hexColor.replace('#', '');
@@ -729,6 +732,16 @@ populateMenu();
 const themeList = document.getElementById('themeList');
 if (themeList) {
     const themeItems = themeList.querySelectorAll('li');
+    
+    // Obnovit aktivní položku podle načteného tématu
+    themeItems.forEach(li => {
+        if (li.getAttribute('data-theme') === currentTheme) {
+            li.classList.add('active');
+        } else {
+            li.classList.remove('active');
+        }
+    });
+
     themeItems.forEach(li => {
         li.tabIndex = 0;
 
@@ -736,6 +749,9 @@ if (themeList) {
             if (isSpinning) return;
             currentTheme = li.getAttribute('data-theme');
             colors = themeColors[currentTheme];
+            
+            // Uložit do localStorage
+            localStorage.setItem('wheelTheme', currentTheme);
 
             // Změna třídy na body
             document.body.className = currentTheme === 'default' ? '' : `theme-${currentTheme}`;
