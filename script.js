@@ -108,11 +108,25 @@ const themeColors = {
     ]
 };
 
+const themeMetaColors = {
+    default: '#1a1a2e',
+    circus: '#f4f1ea',
+    folklore: '#fdfbf7'
+};
+
+function updateMetaThemeColor(theme) {
+    const metaTag = document.querySelector('meta[name="theme-color"]');
+    if (metaTag) {
+        metaTag.setAttribute('content', themeMetaColors[theme] || themeMetaColors.default);
+    }
+}
+
 let currentTheme = localStorage.getItem('wheelTheme') || 'default';
 let colors = themeColors[currentTheme];
 if (currentTheme !== 'default') {
     document.body.className = `theme-${currentTheme}`;
 }
+updateMetaThemeColor(currentTheme);
 
 function getContrastColor(hexColor) {
     const hex = hexColor.replace('#', '');
@@ -792,6 +806,9 @@ if (themeList) {
 
             // Change class on body
             document.body.className = currentTheme === 'default' ? '' : `theme-${currentTheme}`;
+            
+            // Update theme color meta tag
+            updateMetaThemeColor(currentTheme);
 
             // Highlight active item in menu
             themeItems.forEach(el => el.classList.remove('active'));
