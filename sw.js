@@ -1,10 +1,11 @@
-const CACHE_NAME = 'kolo-nestesti-v4';
+const CACHE_NAME = 'kolo-nestesti-v6';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './style.css',
   './script.js',
   './manifest.json',
+  './sounds/list.json',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './favicon.ico',

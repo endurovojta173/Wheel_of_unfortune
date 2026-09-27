@@ -40,14 +40,14 @@ The app consists of pure HTML, CSS, and JavaScript (Vanilla JS) and does not req
 
 You can use your own `.mp3` files instead of the generated Web Audio API fanfares!
 1. Place your `.mp3` files into the `sounds/` folder.
-2. Open `script.js` and find the `customSounds` array near the top (around line 174).
-3. Add the exact filenames of your audio files to the list:
-```javascript
-const customSounds = [
+2. Open `sounds/list.json`.
+3. Add the exact filenames of your audio files to the JSON list:
+```json
+[
     "sounds/1.mp3",
     "sounds/moje_fanfara.mp3",
     "sounds/smich.mp3"
-];
+]
 ```
 4. In the app's sidebar menu, switch **Zvuky (Výhra)** to **Vlastní (MP3)**. The app will now pick a random sound from your list every time the wheel stops!
 

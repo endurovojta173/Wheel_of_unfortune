@@ -171,11 +171,14 @@ if (currentTheme !== 'default') {
 updateMetaThemeColor(currentTheme);
 
 // --- Zvuky ---
-const customSounds = [
-    "sounds/1.mp3",
-    "sounds/2.mp3",
-    "sounds/3.mp3"
-];
+let customSounds = [];
+fetch('sounds/list.json')
+    .then(response => response.json())
+    .then(data => {
+        customSounds = data;
+    })
+    .catch(e => console.log('Nelze načíst seznam zvuků:', e));
+
 let currentSoundMode = localStorage.getItem('wheelSoundMode') || 'generated';
 
 function getContrastColor(hexColor) {
