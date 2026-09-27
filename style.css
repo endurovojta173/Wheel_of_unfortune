@@ -39,8 +39,8 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    padding: 60px 20px 20px 20px;
+    justify-content: center;
+    padding: 40px 20px 40px 20px;
     gap: 3vh;
     overflow: hidden;
     min-width: 0;
@@ -88,15 +88,17 @@ header {
 
 header p {
     color: var(--text-muted);
-    font-size: min(1.1rem, 4vw, 2.5vh);
+    font-size: min(1.5rem, 5vw, 3vh);
+    font-weight: 700;
     margin-top: 10px;
+    min-height: 3rem;
 }
 
 .wheel-container {
     position: relative;
     width: 100%;
     aspect-ratio: 1 / 1;
-    max-width: min(800px, 95vw, calc(100vh - 250px));
+    max-width: min(800px, 95vw, calc(100vh - 320px));
     display: flex;
     flex-direction: column;
     align-items: center;

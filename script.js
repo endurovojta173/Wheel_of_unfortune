@@ -390,7 +390,7 @@ function playMisfortuneSound() {
     }
 }
 
-function simulateWheelTicks(duration, totalTicks) {
+function simulateWheelTicks(duration, totalTicks, rotationDiff) {
     let startTime = null;
     let lastTick = 0;
 
@@ -407,6 +407,18 @@ function simulateWheelTicks(duration, totalTicks) {
 
         if (currentTick > lastTick) {
             playTick();
+            
+            const subHeaderText = document.getElementById('subHeaderText');
+            if (subHeaderText && rotationDiff) {
+                const currentAnimRotation = currentRotation + (easeOut * rotationDiff);
+                const normalizedAnimRotation = currentAnimRotation % 360;
+                const degreesPerSegment = 360 / misfortunes.length;
+                let pointerAngle = (270 - normalizedAnimRotation + 360) % 360;
+                const currentSegmentIndex = Math.floor(pointerAngle / degreesPerSegment);
+                
+                subHeaderText.textContent = misfortunes[currentSegmentIndex];
+            }
+            
             lastTick = currentTick;
         }
 
@@ -438,7 +450,7 @@ function spinWheel() {
     // Spočítat, kolik dílků kolo celkem mine, a nastavit adekvátní počet "tiků"
     const rotationDiff = targetRotation - currentRotation;
     const segmentsPassed = Math.floor(rotationDiff / (360 / misfortunes.length));
-    simulateWheelTicks(spinDurationMs, segmentsPassed);
+    simulateWheelTicks(spinDurationMs, segmentsPassed, rotationDiff);
 
     // CSS Animace s HW akcelerací
     canvas.style.transition = `transform ${spinDurationS}s cubic-bezier(0.17, 0.67, 0.12, 0.99)`;
@@ -460,6 +472,11 @@ function spinWheel() {
         // Naše kolo kreslí od 3 hodin (0°), šipka je nahoře (-90° / 270°)
         let pointerAngle = (270 - normalizedRotation + 360) % 360;
         const winningIndex = Math.floor(pointerAngle / degreesPerSegment);
+        
+        const subHeaderText = document.getElementById('subHeaderText');
+        if (subHeaderText) {
+            subHeaderText.textContent = misfortunes[winningIndex];
+        }
 
         showResult(misfortunes[winningIndex]);
     });
