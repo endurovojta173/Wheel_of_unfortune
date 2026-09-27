@@ -1,6 +1,6 @@
 # 🎡 Wheel of Unfortune
 
-👉 **[Play it online here!](https://endurovojta173.github.io/wheel_of_unfortune/)** 👈
+👉 **[Play it online here!](https://endurovojta173.github.io/Wheel_of_unfortune/)** 👈
 
 Spin the wheel for your daily dose of misery! This web application serves as an interactive and visually catchy "Wheel of Unfortune", created especially for developer teams or anyone who wants to spice up their day with a bit of dark humor.
 
