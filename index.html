@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="cs">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -7,14 +8,18 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
     <meta name="description" content="Vyzkoušej své štěstí (nebo spíše neštěstí) na tomto zábavném kole osudu!">
+    <meta name="author" content="endurovojta173">
 </head>
+
 <body>
     <div class="layout-wrapper">
         <!-- Univerzální tlačítko pro menu (Hamburger) -->
         <button id="menuToggleBtn" class="menu-toggle-btn" aria-label="Přepnout menu">
-            <svg viewBox="0 0 24 24" width="28" height="28"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+            <svg viewBox="0 0 24 24" width="28" height="28">
+                <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
+            </svg>
         </button>
-        
+
         <div id="menuOverlay" class="menu-overlay hidden"></div>
 
         <aside id="sidebar" class="sidebar">
@@ -25,7 +30,7 @@
                 <!-- Dynamicky plněno z JS -->
             </ul>
             <button id="createCustomBtn" class="custom-cat-btn">+ Vlastní kategorie</button>
-            
+
             <div class="menu-header" style="border-top: 1px solid rgba(255, 255, 255, 0.1); margin-top: 30px;">
                 <h2>Vzhled</h2>
             </div>
@@ -34,84 +39,99 @@
                 <li data-theme="circus">Cirkus (Klasika)</li>
                 <li data-theme="folklore">Hodobóžové</li>
             </ul>
+
+            <div style="margin-top: auto; padding: 30px 20px; border-top: 1px solid rgba(255, 255, 255, 0.1); text-align: center;">
+                <a href="https://github.com/endurovojta173" target="_blank" rel="noopener noreferrer" class="menu-github-link">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                    github.com/endurovojta173
+                </a>
+            </div>
         </aside>
-        
+
         <div class="app-container">
-        <button id="infoBtn" class="info-btn" aria-label="Informace o sadě">?</button>
-        <header>
-            <h1 class="glitch" data-text="KOLO NEŠTĚSTÍ">KOLO NEŠTĚSTÍ</h1>
-            <p id="subHeaderText">Zatoč si pro svou denní dávku utrpení.</p>
-        </header>
-        
-        <main class="wheel-container">
-            <div class="pointer"></div>
-            <div class="canvas-wrapper">
-                <canvas id="wheelCanvas"></canvas>
-            </div>
-            
-            <button id="spinBtn" class="spin-btn">
-                <span class="btn-text">ZATOČIT</span>
-                <span class="btn-bg"></span>
-            </button>
-        </main>
+            <button id="infoBtn" class="info-btn" aria-label="Informace o sadě">?</button>
+            <header>
+                <h1 class="glitch" data-text="KOLO NEŠTĚSTÍ">KOLO NEŠTĚSTÍ</h1>
+                <p id="subHeaderText">Zatoč si pro svou denní dávku utrpení.</p>
+            </header>
 
-        <div id="resultModal" class="modal hidden">
-            <div class="modal-content glass">
-                <h2>Tvůj osud:</h2>
-                <p id="resultText">Něco se pokazilo</p>
-                <button id="closeModalBtn" class="close-btn">Přijmout osud</button>
-            </div>
-        </div>
-        
-        <!-- Vlastní kategorie modal -->
-        <div id="customModal" class="modal hidden">
-            <div class="modal-content glass" style="width: 90%; max-width: 400px; text-align: left;">
-                <h2 id="customModalTitle" style="margin-bottom: 15px; font-size: 1.5rem;">Vytvořit kolo</h2>
-                <div class="input-label">Název kategorie</div>
-                <input type="text" id="customName" placeholder="Zadejte název..." class="custom-input">
-                <div id="customItemsContainer" class="custom-items-container"></div>
-                <div style="display: flex; gap: 10px; margin-top: 15px;">
-                    <button id="saveCustomBtn" class="close-btn" style="flex: 1;">Vytvořit</button>
-                    <button id="cancelCustomBtn" class="close-btn" style="flex: 1; background: transparent; border: 1px solid var(--text-muted); color: var(--text-main);">Zrušit</button>
+            <main class="wheel-container">
+                <div class="pointer"></div>
+                <div class="canvas-wrapper">
+                    <canvas id="wheelCanvas"></canvas>
                 </div>
-            </div>
-        </div>
 
-        <!-- Info modal -->
-        <div id="infoModal" class="modal hidden">
-            <div class="modal-content glass" style="width: 90%; max-width: 500px; text-align: left; max-height: 80vh; display: flex; flex-direction: column;">
-                <h2 id="infoModalTitle" style="margin-bottom: 15px; font-size: 1.5rem;">Seznam úkolů</h2>
-                <div id="infoModalList" style="flex: 1; overflow-y: auto; margin-bottom: 15px; padding-right: 10px; font-size: 0.95rem; line-height: 1.4;">
-                    <!-- Seznam se naplní z JS -->
-                </div>
-                <div style="font-size: 0.85rem; text-align: center; margin-bottom: 15px; color: var(--text-muted);">
-                    Vytvořil: <a href="https://github.com/endurovojta173" target="_blank" style="color: var(--accent-red); text-decoration: none; font-weight: bold;">endurovojta173</a>
-                </div>
-                <div style="display: flex; gap: 10px; width: 100%;">
-                    <button id="shareCategoryBtn" class="close-btn" style="flex: 1; background: transparent; border: 1px solid var(--text-muted); color: var(--text-main);">Sdílet</button>
-                    <button id="closeInfoBtn" class="close-btn" style="flex: 1;">Zavřít</button>
+                <button id="spinBtn" class="spin-btn">
+                    <span class="btn-text">ZATOČIT</span>
+                    <span class="btn-bg"></span>
+                </button>
+            </main>
+
+            <div id="resultModal" class="modal hidden">
+                <div class="modal-content glass">
+                    <h2>Tvůj osud:</h2>
+                    <p id="resultText">Něco se pokazilo</p>
+                    <button id="closeModalBtn" class="close-btn">Přijmout osud</button>
                 </div>
             </div>
-        </div>
 
-        <!-- Confirm modal -->
-        <div id="confirmModal" class="modal hidden">
-            <div class="modal-content glass" style="width: 90%; max-width: 400px; text-align: center;">
-                <h2 style="margin-bottom: 15px; font-size: 1.5rem; color: #ff3366;">Opravdu smazat?</h2>
-                <div id="confirmModalText" style="margin-bottom: 25px; font-size: 1.1rem; color: var(--text-main);">
-                    Opravdu chcete smazat tuto kategorii?
+            <!-- Vlastní kategorie modal -->
+            <div id="customModal" class="modal hidden">
+                <div class="modal-content glass" style="width: 90%; max-width: 400px; text-align: left;">
+                    <h2 id="customModalTitle" style="margin-bottom: 15px; font-size: 1.5rem;">Vytvořit kolo</h2>
+                    <div class="input-label">Název kategorie</div>
+                    <input type="text" id="customName" placeholder="Zadejte název..." class="custom-input">
+                    <div id="customItemsContainer" class="custom-items-container"></div>
+                    <div style="display: flex; gap: 10px; margin-top: 15px;">
+                        <button id="saveCustomBtn" class="close-btn" style="flex: 1;">Vytvořit</button>
+                        <button id="cancelCustomBtn" class="close-btn"
+                            style="flex: 1; background: transparent; border: 1px solid var(--text-muted); color: var(--text-main);">Zrušit</button>
+                    </div>
                 </div>
-                <div style="display: flex; gap: 10px; width: 100%;">
-                    <button id="confirmYesBtn" class="close-btn" style="flex: 1; background: #ff3366; border-color: #ff3366;">Smazat</button>
-                    <button id="confirmNoBtn" class="close-btn" style="flex: 1; background: transparent; border: 1px solid var(--text-muted); color: var(--text-main);">Zrušit</button>
+            </div>
+
+            <!-- Info modal -->
+            <div id="infoModal" class="modal hidden">
+                <div class="modal-content glass"
+                    style="width: 90%; max-width: 500px; text-align: left; max-height: 80vh; display: flex; flex-direction: column;">
+                    <h2 id="infoModalTitle" style="margin-bottom: 15px; font-size: 1.5rem;">Seznam úkolů</h2>
+                    <div id="infoModalList"
+                        style="flex: 1; overflow-y: auto; margin-bottom: 15px; padding-right: 10px; font-size: 0.95rem; line-height: 1.4;">
+                        <!-- Seznam se naplní z JS -->
+                    </div>
+                    <div style="font-size: 0.85rem; text-align: center; margin-bottom: 15px; color: var(--text-muted);">
+                        Vytvořil: <a href="https://github.com/endurovojta173" target="_blank"
+                            style="color: var(--accent-red); text-decoration: none; font-weight: bold;">endurovojta173</a>
+                    </div>
+                    <div style="display: flex; gap: 10px; width: 100%;">
+                        <button id="shareCategoryBtn" class="close-btn"
+                            style="flex: 1; background: transparent; border: 1px solid var(--text-muted); color: var(--text-main);">Sdílet</button>
+                        <button id="closeInfoBtn" class="close-btn" style="flex: 1;">Zavřít</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Confirm modal -->
+            <div id="confirmModal" class="modal hidden">
+                <div class="modal-content glass" style="width: 90%; max-width: 400px; text-align: center;">
+                    <h2 style="margin-bottom: 15px; font-size: 1.5rem; color: #ff3366;">Opravdu smazat?</h2>
+                    <div id="confirmModalText" style="margin-bottom: 25px; font-size: 1.1rem; color: var(--text-main);">
+                        Opravdu chcete smazat tuto kategorii?
+                    </div>
+                    <div style="display: flex; gap: 10px; width: 100%;">
+                        <button id="confirmYesBtn" class="close-btn"
+                            style="flex: 1; background: #ff3366; border-color: #ff3366;">Smazat</button>
+                        <button id="confirmNoBtn" class="close-btn"
+                            style="flex: 1; background: transparent; border: 1px solid var(--text-muted); color: var(--text-main);">Zrušit</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    </div>
-    
+
     <!-- Animace konfet -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="script.js"></script>
 </body>
+
 </html>
