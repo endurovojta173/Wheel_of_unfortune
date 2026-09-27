@@ -5,7 +5,7 @@ const resultModal = document.getElementById('resultModal');
 const resultText = document.getElementById('resultText');
 const closeModalBtn = document.getElementById('closeModalBtn');
 
-// --- Prvky pro boční menu ---
+// --- Sidebar menu elements ---
 const menuToggleBtn = document.getElementById('menuToggleBtn');
 const sidebar = document.getElementById('sidebar');
 const menuOverlay = document.getElementById('menuOverlay');
@@ -40,7 +40,7 @@ function showConfirm(text, callback) {
     confirmModal.classList.remove('hidden');
 }
 
-// Sady otázek
+// Question sets
 const questionSets = {
     "Základní": [
         "Udělej 10 poctivých dřepů!",
@@ -85,14 +85,14 @@ const questionSets = {
     "Čísla 0-20": Array.from({ length: 21 }, (_, i) => i.toString())
 };
 
-// Načtení vlastních kategorií z lokální paměti
+// Load custom categories from local storage
 const savedCategories = JSON.parse(localStorage.getItem('wheelCustomCategories')) || {};
 Object.assign(questionSets, savedCategories);
 
 let currentSetName = "Základní";
 let misfortunes = questionSets[currentSetName];
 
-// Ostré barvy - motivy
+// Sharp colors - themes
 const themeColors = {
     default: [
         '#FF3366', '#1A1A2E', '#E94560', '#16213E',
@@ -128,7 +128,7 @@ let isSpinning = false;
 let spinHistory = [];
 
 function drawWheel() {
-    // Zvýšené rozlišení (baseSize) pro větší kvalitu na desktopech
+    // Increased resolution (baseSize) for better quality on desktops
     const baseSize = 800;
     const scale = window.devicePixelRatio || 1;
 
@@ -141,49 +141,49 @@ function drawWheel() {
     const arc = (Math.PI * 2) / numSegments;
     const centerX = baseSize / 2;
     const centerY = baseSize / 2;
-    const radius = centerX - 15; // malý okraj
+    const radius = centerX - 15; // small margin
 
     ctx.clearRect(0, 0, baseSize, baseSize);
 
     for (let i = 0; i < numSegments; i++) {
         const angle = i * arc;
 
-        // Výplň segmentu
+        // Segment fill
         ctx.beginPath();
         ctx.fillStyle = colors[i % colors.length];
         ctx.moveTo(centerX, centerY);
         ctx.arc(centerX, centerY, radius, angle, angle + arc, false);
         ctx.fill();
 
-        // Ohraničení segmentu
+        // Segment border
         ctx.lineWidth = 3;
         ctx.strokeStyle = "rgba(255, 255, 255, 0.15)";
         ctx.stroke();
 
-        // Nakreslení textu
+        // Draw text
         ctx.save();
         ctx.translate(centerX, centerY);
         ctx.rotate(angle + arc / 2);
-        ctx.textAlign = "center"; // Změna na středové zarovnání
+        ctx.textAlign = "center"; // Change to center alignment
         ctx.textBaseline = "middle";
 
         const segmentColor = colors[i % colors.length];
         const textColor = getContrastColor(segmentColor);
         ctx.fillStyle = textColor;
 
-        // Dynamická velikost písma - přepočteno na nové rozlišení 800px
+        // Dynamic font size - recalculated for new 800px resolution
         const fontSize = numSegments > 10 ? 22 : 28;
         ctx.font = `bold ${fontSize}px 'Outfit', sans-serif`;
         ctx.shadowColor = textColor === '#FFFFFF' ? "rgba(0,0,0,0.9)" : "rgba(255,255,255,0.7)";
         ctx.shadowBlur = textColor === '#FFFFFF' ? 8 : 4;
 
         const text = misfortunes[i];
-        const maxWidth = radius - 110; // Volný prostor pro text směrem do středu
+        const maxWidth = radius - 110; // Free space for text towards the center
         const words = text.split(' ');
         let line = '';
         let lines = [];
 
-        // Zalamování textu na více řádků
+        // Text wrapping for multiple lines
         for (let n = 0; n < words.length; n++) {
             const testLine = line + words[n] + ' ';
             const metrics = ctx.measureText(testLine);
@@ -197,20 +197,20 @@ function drawWheel() {
         }
         lines.push(line);
 
-        // Spočítáme skutečnou maximální šířku řádku v tomto bloku, 
-        // aby blok textu mohl být jako celek nalepený na vnějším okraji
+        // Calculate the actual maximum line width in this block,
+        // so the block of text as a whole can be aligned to the outer edge
         let actualMaxWidth = 0;
         for (let j = 0; j < lines.length; j++) {
             const w = ctx.measureText(lines[j].trim()).width;
             if (w > actualMaxWidth) actualMaxWidth = w;
         }
 
-        // Vykreslení řádků (vertikálně i horizontálně vycentrované kousek od okraje)
+        // Render lines (vertically and horizontally centered near the edge)
         const lineHeight = fontSize + 6;
         const totalHeight = lines.length * lineHeight;
         const startY = -(totalHeight / 2) + (lineHeight / 2);
 
-        // Cílový pravý okraj bloku je radius - 45. Střed textu bude tedy posunut o polovinu jeho šířky doleva.
+        // Target right edge of the block is radius - 45. Center of text is shifted left by half its width.
         const textCenterX = radius - 45 - (actualMaxWidth / 2);
 
         for (let j = 0; j < lines.length; j++) {
@@ -220,7 +220,7 @@ function drawWheel() {
         ctx.restore();
     }
 
-    // Vnitřní kruh (střed kola)
+    // Inner circle (center of the wheel)
     ctx.beginPath();
     ctx.arc(centerX, centerY, 40, 0, Math.PI * 2);
     ctx.fillStyle = currentTheme === 'folklore' ? '#FFFFFF' : (currentTheme === 'circus' ? '#FFFFFF' : '#1a1a2e');
@@ -229,14 +229,14 @@ function drawWheel() {
     ctx.strokeStyle = currentTheme === 'folklore' ? '#d32f2f' : (currentTheme === 'circus' ? '#ff0055' : '#FF3366');
     ctx.stroke();
 
-    // Malý ozdobný středový bod
+    // Small decorative center dot
     ctx.beginPath();
     ctx.arc(centerX, centerY, 13, 0, Math.PI * 2);
     ctx.fillStyle = currentTheme === 'folklore' ? '#1565C0' : (currentTheme === 'circus' ? '#0099FF' : '#FF3366');
     ctx.fill();
 }
 
-// Web Audio API kontext
+// Web Audio API context
 let audioCtx;
 
 function initAudio() {
@@ -253,7 +253,7 @@ function playTick() {
     const osc = audioCtx.createOscillator();
     const gainNode = audioCtx.createGain();
 
-    osc.type = 'sine'; // Kratký, tlumený zvuk tikání
+    osc.type = 'sine'; // Short, muted ticking sound
     osc.frequency.setValueAtTime(800, audioCtx.currentTime);
     osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.05);
 
@@ -271,11 +271,11 @@ function playMisfortuneSound() {
     if (!audioCtx) return;
     const now = audioCtx.currentTime;
     
-    // Náhodný výběr jedné ze tří fanfár
+    // Random selection of one of the three fanfares
     const choice = Math.floor(Math.random() * 3);
     
     if (choice === 0) {
-        // --- 1. Epická žesťová fanfára (Ta-ta-ta-DAAA!) ---
+        // --- 1. Epic brass fanfare (Ta-ta-ta-DAAA!) ---
         const times = [0, 0.15, 0.30, 0.50];
         
         function playEpicTone(freq, time, duration, isLast) {
@@ -315,7 +315,7 @@ function playMisfortuneSound() {
         playEpicTone(783.99, now + times[3], 2.5, true); 
         
     } else if (choice === 1) {
-        // --- 2. Retro 8-bitová fanfára (TadadaDAAA) ---
+        // --- 2. Retro 8-bit fanfare (TadadaDAAA) ---
         const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
         const times = [0, 0.12, 0.24, 0.36];
         
@@ -349,8 +349,8 @@ function playMisfortuneSound() {
         osc2.stop(now + 2.0);
         
     } else {
-        // --- 3. Královská jízda (Cavalry Charge) ---
-        // Melodie: Da-da-da-DAAA, da-DAAAA!
+        // --- 3. Cavalry Charge ---
+        // Melody: Da-da-da-DAAA, da-DAAAA!
         const G4 = 392.00, C5 = 523.25, E5 = 659.25, G5 = 783.99;
         const notes = [G4, C5, E5, G5, E5, G5];
         const times = [0, 0.15, 0.30, 0.45, 0.8, 1.0];
@@ -361,7 +361,7 @@ function playMisfortuneSound() {
             const osc2 = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             
-            // Mix pily a trojúhelníku pro jemnější, ale úderný zvuk trubky
+            // Mix of sawtooth and triangle for a softer, but punchy trumpet sound
             osc1.type = 'triangle'; 
             osc2.type = 'sawtooth';
             osc1.frequency.value = freq;
@@ -400,7 +400,7 @@ function simulateWheelTicks() {
     function step() {
         if (!isSpinning) return;
 
-        // Získání skutečné rotace z CSS
+        // Get actual rotation from CSS
         const style = window.getComputedStyle(canvas);
         const matrix = style.getPropertyValue('transform');
         let currentAngle = 0;
@@ -415,7 +415,7 @@ function simulateWheelTicks() {
         if (currentAngle < 0) currentAngle += 360;
 
         const degreesPerSegment = 360 / misfortunes.length;
-        // Naše kolo kreslí od 3 hodin (0°), šipka je nahoře (-90° / 270°)
+        // Our wheel draws from 3 o'clock (0°), pointer is at the top (-90° / 270°)
         let pointerAngle = (270 - currentAngle + 360) % 360;
         const currentSegmentIndex = Math.floor(pointerAngle / degreesPerSegment);
 
@@ -439,43 +439,43 @@ function simulateWheelTicks() {
 function spinWheel() {
     if (isSpinning) return;
 
-    initAudio(); // Probuzení audia po kliknutí
+    initAudio(); // Wake up audio on click
 
     isSpinning = true;
     spinBtn.disabled = true;
 
-    // Náhodná doba točení (6.5 až 11.5 vteřin pro větší napětí)
+    // Random spin duration (6.5 to 11.5 seconds for more tension)
     const spinDurationS = 6.5 + (Math.random() * 5);
     const spinDurationMs = Math.round(spinDurationS * 1000);
 
-    // Počet otáček navázaný na dobu trvání s přidáním další vrstvy náhodnosti
+    // Number of spins tied to duration with an added layer of randomness
     const extraSpins = Math.floor(spinDurationS * 1.1) + Math.floor(Math.random() * 4);
     const randomAngle = Math.floor(Math.random() * 360);
 
     const targetRotation = currentRotation + (extraSpins * 360) + randomAngle;
 
-    // Spočítat cílovou rotaci
+    // Calculate target rotation
     const rotationDiff = targetRotation - currentRotation;
     simulateWheelTicks();
 
-    // CSS Animace s HW akcelerací
+    // CSS Animation with HW acceleration
     canvas.style.transition = `transform ${spinDurationS}s cubic-bezier(0.17, 0.67, 0.12, 0.99)`;
     canvas.style.transform = `rotate(${targetRotation}deg) translateZ(0)`;
 
-    // Naslouchat přesně na moment, kdy CSS animace opravdu skončí
+    // Listen for the exact moment the CSS animation truly ends
     canvas.addEventListener('transitionend', function onSpinEnd() {
-        // Okamžitě odstraníme posluchač, aby se nevolal víckrát
+        // Immediately remove listener so it doesn't fire multiple times
         canvas.removeEventListener('transitionend', onSpinEnd);
 
         isSpinning = false;
         spinBtn.disabled = false;
 
-        // Uložení aktuálního úhlu a normalizace
+        // Save current angle and normalize
         currentRotation = targetRotation;
         const normalizedRotation = currentRotation % 360;
 
         const degreesPerSegment = 360 / misfortunes.length;
-        // Naše kolo kreslí od 3 hodin (0°), šipka je nahoře (-90° / 270°)
+        // Our wheel draws from 3 o'clock (0°), pointer is at the top (-90° / 270°)
         let pointerAngle = (270 - normalizedRotation + 360) % 360;
         const winningIndex = Math.floor(pointerAngle / degreesPerSegment);
         
@@ -496,12 +496,12 @@ function showResult(text) {
     resultText.textContent = text;
     resultModal.classList.remove('hidden');
 
-    // Zaměřit tlačítko v modálu (pro tvOS ovladač a klávesnici)
+    // Focus the button in the modal (for tvOS remote and keyboard)
     setTimeout(() => closeModalBtn.focus(), 100);
 
-    playMisfortuneSound(); // Přehrát dramatický zvuk výhry
+    playMisfortuneSound(); // Play dramatic winning sound
 
-    // Temný / nebezpečný confetti efekt
+    // Dark / dangerous confetti effect
     if (window.confetti) {
         const duration = 2000;
         const animationEnd = Date.now() + duration;
@@ -533,11 +533,11 @@ function showResult(text) {
 
 closeModalBtn.addEventListener('click', () => {
     resultModal.classList.add('hidden');
-    // Vrátit focus na hlavní tlačítko po zavření modálu
+    // Return focus to main button after closing modal
     setTimeout(() => spinBtn.focus(), 100);
 });
 
-// --- HISTORIE ---
+// --- HISTORY ---
 const historyBtn = document.getElementById('historyBtn');
 const historyModal = document.getElementById('historyModal');
 const closeHistoryBtn = document.getElementById('closeHistoryBtn');
@@ -571,16 +571,16 @@ if (closeHistoryBtn) {
 
 spinBtn.addEventListener('click', spinWheel);
 
-// Zajištění správného překreslení při změně velikosti okna/orientace na mobilu
+// Ensure correct redraw when resizing window/changing orientation on mobile
 window.addEventListener('resize', drawWheel);
 
-// Počáteční vykreslení
+// Initial render
 drawWheel();
 
-// Nastavení počátečního focusu na tvOS a klávesnicové navigaci
+// Set initial focus for tvOS and keyboard navigation
 setTimeout(() => spinBtn.focus(), 500);
 
-// --- Logika pro boční menu ---
+// --- Sidebar menu logic ---
 function toggleMenu(forceState) {
     const isMobile = window.innerWidth <= 768;
 
@@ -616,7 +616,7 @@ function populateMenu() {
     
     Object.keys(questionSets).forEach(setName => {
         const li = document.createElement('li');
-        li.tabIndex = 0; // Pro ovladače a klávesnici
+        li.tabIndex = 0; // For remotes and keyboards
         
         li.style.display = 'flex';
         li.style.justifyContent = 'space-between';
@@ -683,7 +683,7 @@ function populateMenu() {
             deleteBtn.style.background = 'transparent';
             deleteBtn.style.border = 'none';
             deleteBtn.style.cursor = 'pointer';
-            deleteBtn.style.color = '#ff3366'; // Červená barva
+            deleteBtn.style.color = '#ff3366'; // Red color
             deleteBtn.style.padding = '5px';
             deleteBtn.style.marginLeft = '5px';
             deleteBtn.style.opacity = '0.7';
@@ -702,28 +702,28 @@ function populateMenu() {
             });
             
             deleteBtn.addEventListener('click', (e) => {
-                e.stopPropagation(); // Zabránit výběru kategorie
+                e.stopPropagation(); // Prevent category selection
                 
-                // Zavřít menu, aby neclonilo modálnímu oknu pro smazání
+                // Close menu so it doesn't block the delete modal
                 toggleMenu(false);
                 
                 showConfirm(`Opravdu chcete smazat vlastní kategorii "${setName}"?`, () => {
-                    // Smazat ze seznamu
+                    // Delete from list
                     delete questionSets[setName];
                     
-                    // Smazat z localStorage
+                    // Delete from localStorage
                     const savedCategoriesObj = JSON.parse(localStorage.getItem('wheelCustomCategories')) || {};
                     delete savedCategoriesObj[setName];
                     localStorage.setItem('wheelCustomCategories', JSON.stringify(savedCategoriesObj));
                     
-                    // Pokud uživatel smazal kategorii, na které právě je, vrátíme ho na Základní
+                    // If the user deleted the currently active category, return them to Basic
                     if (currentSetName === setName) {
                         currentSetName = 'Základní';
                         misfortunes = questionSets[currentSetName];
                         drawWheel();
                     }
                     
-                    // Překreslit menu
+                    // Redraw menu
                     populateMenu();
                 });
             });
@@ -742,14 +742,14 @@ function populateMenu() {
             currentSetName = setName;
             misfortunes = questionSets[setName];
 
-            // Obarvení aktivní položky
+            // Highlight active item
             document.querySelectorAll('.set-list li').forEach(el => el.classList.remove('active'));
             li.classList.add('active');
 
-            // Okamžité překreslení kola pro novou sadu textů
+            // Immediate wheel redraw for new text set
             drawWheel();
 
-            // Zavřít menu po výběru vždy
+            // Always close menu after selection
             toggleMenu(false);
         };
 
@@ -762,15 +762,15 @@ function populateMenu() {
     });
 }
 
-// Inicializace postranního menu
+// Sidebar menu initialization
 populateMenu();
 
-// --- Logika pro výběr vzhledu (Themes) ---
+// --- Theme selection logic ---
 const themeList = document.getElementById('themeList');
 if (themeList) {
     const themeItems = themeList.querySelectorAll('li');
     
-    // Obnovit aktivní položku podle načteného tématu
+    // Restore active item based on loaded theme
     themeItems.forEach(li => {
         if (li.getAttribute('data-theme') === currentTheme) {
             li.classList.add('active');
@@ -787,20 +787,20 @@ if (themeList) {
             currentTheme = li.getAttribute('data-theme');
             colors = themeColors[currentTheme];
             
-            // Uložit do localStorage
+            // Save to localStorage
             localStorage.setItem('wheelTheme', currentTheme);
 
-            // Změna třídy na body
+            // Change class on body
             document.body.className = currentTheme === 'default' ? '' : `theme-${currentTheme}`;
 
-            // Obarvení aktivní položky v menu
+            // Highlight active item in menu
             themeItems.forEach(el => el.classList.remove('active'));
             li.classList.add('active');
 
-            // Překreslení kola
+            // Redraw wheel
             drawWheel();
 
-            // Zavřít menu po výběru
+            // Close menu after selection
             toggleMenu(false);
         };
 
@@ -811,7 +811,7 @@ if (themeList) {
     });
 }
 
-// --- Logika pro vlastní kategorii ---
+// --- Custom category logic ---
 const customModal = document.getElementById('customModal');
 const customModalTitle = document.getElementById('customModalTitle');
 const createCustomBtn = document.getElementById('createCustomBtn');
@@ -877,12 +877,12 @@ if (createCustomBtn) {
         if (customModalTitle) customModalTitle.textContent = 'Vytvořit kolo';
         saveCustomBtn.textContent = 'Vytvořit';
         customNameInput.value = '';
-        customItemsContainer.innerHTML = ''; // Vyčištění
-        addCustomRow(); // Přidá první řádek
+        customItemsContainer.innerHTML = ''; // Clear
+        addCustomRow(); // Add first row
         customModal.classList.remove('hidden');
         customNameInput.focus();
 
-        // Zavřít menu po kliknutí
+        // Close menu on click
         toggleMenu(false);
     });
 }
@@ -919,32 +919,32 @@ if (saveCustomBtn) {
             }
         }
 
-        // Přidání a aktivování nové sady
+        // Add and activate new set
         questionSets[name] = items;
         if (currentSetName === name || editingCategoryName) {
             currentSetName = name;
             misfortunes = questionSets[name];
         }
 
-        // Uložení do lokální paměti (localStorage)
+        // Save to local storage
         savedCategoriesObj[name] = items;
         localStorage.setItem('wheelCustomCategories', JSON.stringify(savedCategoriesObj));
 
-        // Aktualizace UI
+        // Update UI
         populateMenu();
         drawWheel();
 
-        // Zavření a vyčištění
+        // Close and clear
         customModal.classList.add('hidden');
         customNameInput.value = '';
         editingCategoryName = null;
 
-        // Zavřít menu po výběru
+        // Close menu after selection
         toggleMenu(false);
     });
 }
 
-// --- Logika pro INFO modal ---
+// --- INFO modal logic ---
 const infoBtn = document.getElementById('infoBtn');
 const infoModal = document.getElementById('infoModal');
 const closeInfoBtn = document.getElementById('closeInfoBtn');
@@ -953,7 +953,7 @@ const infoModalTitle = document.getElementById('infoModalTitle');
 
 if (infoBtn) {
     infoBtn.addEventListener('click', () => {
-        // Naplnit data
+        // Populate data
         infoModalTitle.textContent = currentSetName;
 
         let listHTML = '<ul>';
@@ -964,7 +964,7 @@ if (infoBtn) {
 
         infoModalList.innerHTML = listHTML;
 
-        // Zobrazit
+        // Show
         infoModal.classList.remove('hidden');
     });
 }
@@ -982,12 +982,12 @@ if (shareCategoryBtn) {
         const encoded = btoa(encodeURIComponent(JSON.stringify(dataToShare)));
 
         const url = new URL(window.location.href);
-        // Vyčistit předchozí případné sharedCategory parametry, aby se neřetězily
+        // Clear previous sharedCategory params so they don't chain
         url.searchParams.delete('sharedCategory');
         url.searchParams.set('sharedCategory', encoded);
         const link = url.toString();
 
-        // Zkusíme použít moderní Clipboard API
+        // Try to use modern Clipboard API
         if (navigator.clipboard && navigator.clipboard.writeText && window.isSecureContext) {
             navigator.clipboard.writeText(link).then(() => {
                 const originalText = shareCategoryBtn.textContent;
@@ -997,13 +997,13 @@ if (shareCategoryBtn) {
                 prompt('Nepodařilo se zkopírovat odkaz automaticky. Zkopírujte si ho ručně:', link);
             });
         } else {
-            // Fallback pro starší prohlížeče nebo in-app prohlížeče
+            // Fallback for older or in-app browsers
             prompt('Zkopírujte si tento odkaz pro sdílení:', link);
         }
     });
 }
 
-// --- Zpracování sdílené kategorie z URL ---
+// --- Process shared category from URL ---
 window.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const sharedEncoded = urlParams.get('sharedCategory');
@@ -1020,17 +1020,17 @@ window.addEventListener('DOMContentLoaded', () => {
                     importName = importName + ' (Kopie)';
                 }
 
-                // Přidáme do localStorage
+                // Add to localStorage
                 const savedCategoriesObj = JSON.parse(localStorage.getItem('wheelCustomCategories')) || {};
                 savedCategoriesObj[importName] = sharedData.items;
                 localStorage.setItem('wheelCustomCategories', JSON.stringify(savedCategoriesObj));
 
-                // Aktivovat do paměti
+                // Activate in memory
                 questionSets[importName] = sharedData.items;
                 currentSetName = importName;
                 misfortunes = questionSets[importName];
 
-                // Přečistit URL bez znovunačtení stránky
+                // Clean URL without reloading page
                 const newUrl = new URL(window.location.href);
                 newUrl.searchParams.delete('sharedCategory');
                 window.history.replaceState({}, document.title, newUrl.toString());
@@ -1047,7 +1047,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// PWA Service Worker Registrace
+// PWA Service Worker Registration
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js')

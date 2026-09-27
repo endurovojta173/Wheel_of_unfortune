@@ -9,7 +9,7 @@ const ASSETS_TO_CACHE = [
   'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js'
 ];
 
-// Instalace service workeru a kešování souborů
+// Install service worker and cache files
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -19,23 +19,23 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Zpracování requestů (slouží offline pokud je uloženo)
+// Handle requests (serve offline if cached)
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((response) => {
-      // Pokud najdeme shodu v keši, vrátíme ji
+      // If we find a match in the cache, return it
       if (response) {
         return response;
       }
       
-      // Jinak stáhneme ze sítě
+      // Otherwise fetch from network
       return fetch(event.request).then((networkResponse) => {
-        // Kontrola jestli je response validní
+        // Check if response is valid
         if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
           return networkResponse;
         }
 
-        // Naklonujeme response, protože stream se může přečíst jen jednou
+        // Clone the response because the stream can only be read once
         const responseToCache = networkResponse.clone();
 
         caches.open(CACHE_NAME).then((cache) => {
@@ -44,13 +44,13 @@ self.addEventListener('fetch', (event) => {
 
         return networkResponse;
       }).catch(() => {
-        // Zde by mohla být offline fallback stránka, kdybychom nějakou měli
+        // An offline fallback page could be here if we had one
       });
     })
   );
 });
 
-// Aktualizace service workeru a vyčištění staré keše
+// Update service worker and clear old cache
 self.addEventListener('activate', (event) => {
   const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
