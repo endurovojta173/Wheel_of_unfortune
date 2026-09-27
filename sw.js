@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kolo-nestesti-v2';
+const CACHE_NAME = 'kolo-nestesti-v3';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
