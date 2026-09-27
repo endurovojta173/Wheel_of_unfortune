@@ -125,6 +125,7 @@ function getContrastColor(hexColor) {
 
 let currentRotation = 0;
 let isSpinning = false;
+let spinHistory = [];
 
 function drawWheel() {
     // Zvýšené rozlišení (baseSize) pro větší kvalitu na desktopech
@@ -483,7 +484,11 @@ function spinWheel() {
             subHeaderText.textContent = misfortunes[winningIndex];
         }
 
-        showResult(misfortunes[winningIndex]);
+        const winningText = misfortunes[winningIndex];
+        spinHistory.push(winningText);
+        updateHistoryUI();
+
+        showResult(winningText);
     });
 }
 
@@ -531,6 +536,38 @@ closeModalBtn.addEventListener('click', () => {
     // Vrátit focus na hlavní tlačítko po zavření modálu
     setTimeout(() => spinBtn.focus(), 100);
 });
+
+// --- HISTORIE ---
+const historyBtn = document.getElementById('historyBtn');
+const historyModal = document.getElementById('historyModal');
+const closeHistoryBtn = document.getElementById('closeHistoryBtn');
+const historyModalList = document.getElementById('historyModalList');
+
+function updateHistoryUI() {
+    if (spinHistory.length === 0) {
+        historyModalList.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 20px 0;">Zatím nikdo netrpěl. Zatoč kolem!</div>';
+        return;
+    }
+    let html = '<ol style="padding-left: 20px; margin: 0; color: var(--text-main);">';
+    spinHistory.forEach((item) => {
+        html += `<li style="padding: 5px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">${item}</li>`;
+    });
+    html += '</ol>';
+    historyModalList.innerHTML = html;
+}
+
+if (historyBtn) {
+    historyBtn.addEventListener('click', () => {
+        updateHistoryUI();
+        historyModal.classList.remove('hidden');
+    });
+}
+
+if (closeHistoryBtn) {
+    closeHistoryBtn.addEventListener('click', () => {
+        historyModal.classList.add('hidden');
+    });
+}
 
 spinBtn.addEventListener('click', spinWheel);
 
@@ -1009,3 +1046,16 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+
+// PWA Service Worker Registrace
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then((registration) => {
+        console.log('ServiceWorker registrace byla úspěšná s rozsahem: ', registration.scope);
+      })
+      .catch((err) => {
+        console.log('ServiceWorker registrace selhala: ', err);
+      });
+  });
+}

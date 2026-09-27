@@ -9,6 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
     <meta name="description" content="Vyzkoušej své štěstí (nebo spíše neštěstí) na tomto zábavném kole osudu!">
     <meta name="author" content="endurovojta173">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ff3366">
 </head>
 
 <body>
@@ -49,7 +51,12 @@
         </aside>
 
         <div class="app-container">
-            <button id="infoBtn" class="info-btn" aria-label="Informace o sadě">?</button>
+            <div class="top-right-buttons">
+                <button id="historyBtn" class="icon-btn" aria-label="Historie osudu">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </button>
+                <button id="infoBtn" class="icon-btn" aria-label="Informace o sadě">?</button>
+            </div>
             <header>
                 <h1 class="glitch" data-text="KOLO NEŠTĚSTÍ">KOLO NEŠTĚSTÍ</h1>
                 <p id="subHeaderText">Zatoč si pro svou denní dávku utrpení.</p>
@@ -108,6 +115,21 @@
                             style="flex: 1; background: transparent; border: 1px solid var(--text-muted); color: var(--text-main);">Sdílet</button>
                         <button id="closeInfoBtn" class="close-btn" style="flex: 1;">Zavřít</button>
                     </div>
+                </div>
+            </div>
+
+            <!-- History modal -->
+            <div id="historyModal" class="modal hidden">
+                <div class="modal-content glass"
+                    style="width: 90%; max-width: 500px; text-align: left; max-height: 80vh; display: flex; flex-direction: column;">
+                    <h2 style="margin-bottom: 15px; font-size: 1.5rem;">Historie osudu</h2>
+                    <div id="historyModalList"
+                        style="flex: 1; overflow-y: auto; margin-bottom: 15px; padding-right: 10px; font-size: 0.95rem; line-height: 1.4;">
+                        <div style="text-align: center; color: var(--text-muted); padding: 20px 0;">
+                            Zatím nikdo netrpěl. Zatoč kolem!
+                        </div>
+                    </div>
+                    <button id="closeHistoryBtn" class="close-btn" style="width: 100%;">Zavřít</button>
                 </div>
             </div>
 
