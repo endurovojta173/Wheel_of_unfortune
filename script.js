@@ -170,6 +170,14 @@ if (currentTheme !== 'default') {
 }
 updateMetaThemeColor(currentTheme);
 
+// --- Zvuky ---
+const customSounds = [
+    "sounds/1.mp3",
+    "sounds/2.mp3",
+    "sounds/3.mp3"
+];
+let currentSoundMode = localStorage.getItem('wheelSoundMode') || 'generated';
+
 function getContrastColor(hexColor) {
     const hex = hexColor.replace('#', '');
     const r = parseInt(hex.substring(0, 2), 16);
@@ -324,6 +332,14 @@ function playTick() {
 }
 
 function playMisfortuneSound() {
+    if (currentSoundMode === 'custom' && customSounds.length > 0) {
+        // Play random custom MP3
+        const randomSoundPath = customSounds[Math.floor(Math.random() * customSounds.length)];
+        const audio = new Audio(randomSoundPath);
+        audio.play().catch(e => console.log('Audio play error:', e));
+        return;
+    }
+
     if (!audioCtx) return;
     const now = audioCtx.currentTime;
     
@@ -866,6 +882,41 @@ if (themeList) {
         li.addEventListener('click', selectTheme);
         li.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') selectTheme();
+        });
+    });
+}
+
+// --- Sound selection logic ---
+const soundList = document.getElementById('soundList');
+if (soundList) {
+    const soundItems = soundList.querySelectorAll('li');
+    
+    // Restore active item based on loaded sound mode
+    soundItems.forEach(li => {
+        if (li.getAttribute('data-sound') === currentSoundMode) {
+            li.classList.add('active');
+        } else {
+            li.classList.remove('active');
+        }
+    });
+
+    soundItems.forEach(li => {
+        li.tabIndex = 0;
+
+        const selectSound = () => {
+            currentSoundMode = li.getAttribute('data-sound');
+            
+            // Save to localStorage
+            localStorage.setItem('wheelSoundMode', currentSoundMode);
+
+            // Highlight active item in menu
+            soundItems.forEach(el => el.classList.remove('active'));
+            li.classList.add('active');
+        };
+
+        li.addEventListener('click', selectSound);
+        li.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') selectSound();
         });
     });
 }
