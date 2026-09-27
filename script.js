@@ -390,41 +390,44 @@ function playMisfortuneSound() {
     }
 }
 
-function simulateWheelTicks(duration, totalTicks, rotationDiff) {
-    let startTime = null;
-    let lastTick = 0;
+function simulateWheelTicks() {
+    let lastSegmentIndex = -1;
 
-    function step(timestamp) {
-        if (!startTime) startTime = timestamp;
-        let progress = (timestamp - startTime) / duration;
+    function step() {
+        if (!isSpinning) return;
 
-        if (progress >= 1) return;
+        // Získání skutečné rotace z CSS
+        const style = window.getComputedStyle(canvas);
+        const matrix = style.getPropertyValue('transform');
+        let currentAngle = 0;
+        
+        if (matrix !== 'none') {
+            const values = matrix.split('(')[1].split(')')[0].split(',');
+            const a = parseFloat(values[0]);
+            const b = parseFloat(values[1]);
+            currentAngle = Math.atan2(b, a) * (180 / Math.PI);
+        }
+        
+        if (currentAngle < 0) currentAngle += 360;
 
-        // Zpomalující křivka pro tiky, odpovídající více reálné rychlosti rotace
-        // Nižší exponent znamená, že tikání neustane tak brzy a dojede až do konce
-        let easeOut = 1 - Math.pow(1 - progress, 2.8);
-        let currentTick = Math.floor(easeOut * totalTicks);
+        const degreesPerSegment = 360 / misfortunes.length;
+        // Naše kolo kreslí od 3 hodin (0°), šipka je nahoře (-90° / 270°)
+        let pointerAngle = (270 - currentAngle + 360) % 360;
+        const currentSegmentIndex = Math.floor(pointerAngle / degreesPerSegment);
 
-        if (currentTick > lastTick) {
+        if (currentSegmentIndex !== lastSegmentIndex && lastSegmentIndex !== -1) {
             playTick();
-            
+        }
+
+        if (currentSegmentIndex !== lastSegmentIndex) {
             const subHeaderText = document.getElementById('subHeaderText');
-            if (subHeaderText && rotationDiff) {
-                const currentAnimRotation = currentRotation + (easeOut * rotationDiff);
-                const normalizedAnimRotation = currentAnimRotation % 360;
-                const degreesPerSegment = 360 / misfortunes.length;
-                let pointerAngle = (270 - normalizedAnimRotation + 360) % 360;
-                const currentSegmentIndex = Math.floor(pointerAngle / degreesPerSegment);
-                
+            if (subHeaderText) {
                 subHeaderText.textContent = misfortunes[currentSegmentIndex];
             }
-            
-            lastTick = currentTick;
+            lastSegmentIndex = currentSegmentIndex;
         }
 
-        if (isSpinning) {
-            requestAnimationFrame(step);
-        }
+        requestAnimationFrame(step);
     }
     requestAnimationFrame(step);
 }
@@ -447,10 +450,9 @@ function spinWheel() {
 
     const targetRotation = currentRotation + (extraSpins * 360) + randomAngle;
 
-    // Spočítat, kolik dílků kolo celkem mine, a nastavit adekvátní počet "tiků"
+    // Spočítat cílovou rotaci
     const rotationDiff = targetRotation - currentRotation;
-    const segmentsPassed = Math.floor(rotationDiff / (360 / misfortunes.length));
-    simulateWheelTicks(spinDurationMs, segmentsPassed, rotationDiff);
+    simulateWheelTicks();
 
     // CSS Animace s HW akcelerací
     canvas.style.transition = `transform ${spinDurationS}s cubic-bezier(0.17, 0.67, 0.12, 0.99)`;
